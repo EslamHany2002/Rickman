@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:rickman/presentation/UI/Register/Register.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomPasswordTextFormField.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
@@ -16,17 +17,13 @@ class Login extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(
-                height: 50,
+                height: 100,
               ),
               // El3b logo
-              InkWell(
-                onTap: () {},
-                overlayColor: MaterialStateProperty.all(Colors.transparent),
-                child: Image.asset(
+              Image.asset(
                   "Assets/Images/Horizontal_Brain_Cancer_Logo.png",
-                  height: 200,
+                  height: 100,
                 ),
-              ),
               const SizedBox(
                 height: 100,
               ),
@@ -66,7 +63,14 @@ class Login extends StatelessWidget {
                   // Login Button
                   ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.black)
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                      backgroundColor: MaterialStateProperty.all(Colors.black),
+                      elevation: MaterialStateProperty.all(0),
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      )),
+                      textStyle: MaterialStateProperty.all(const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
                     ),
                       onPressed: () {},
                       child: Row(
@@ -91,7 +95,7 @@ class Login extends StatelessWidget {
                         style: TextStyle(color: Colors.black , fontSize: 16),
                       ),
                       TextButton(
-                          onPressed: (){},
+                          onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Register()));},
                           child: Text(
                             "CreateAccount",
                             style: TextStyle(color: Colors.black45 , fontSize: 15),
