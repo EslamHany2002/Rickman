@@ -51,7 +51,7 @@ class UserProfileDataWidget extends StatelessWidget {
                     topRight: isEn?const Radius.circular(80) : const  Radius.circular(15),
                   ),
                   child: Image.asset(
-                      "Assets/Images/logo.png",
+                      "Assets/Images/me.jpg",
                       fit: BoxFit.cover,
                       width: 125,
                       height: 125,
