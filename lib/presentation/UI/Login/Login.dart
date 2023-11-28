@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:rickman/presentation/UI/Forgit%20Password/Forgit.dart';
+import 'package:rickman/presentation/UI/Home/HomePage.dart';
 import 'package:rickman/presentation/UI/Register/Register.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomPasswordTextFormField.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
@@ -46,7 +48,7 @@ class Login extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Forgit()));},
                           child: Text(
                             "forgrt Password",
                             style: TextStyle(
@@ -72,7 +74,7 @@ class Login extends StatelessWidget {
                       textStyle: MaterialStateProperty.all(const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
                     ),
-                      onPressed: () {},
+                      onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Home()));},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
