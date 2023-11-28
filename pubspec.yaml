@@ -39,6 +39,8 @@ dependencies:
   icons_plus: ^4.0.0
   floating_bottom_bar: ^0.0.2
   circle_nav_bar: ^2.0.1+1
+  flutter_svg: ^2.0.9
+  heroicons: ^0.9.0
 
 dev_dependencies:
   flutter_test:
