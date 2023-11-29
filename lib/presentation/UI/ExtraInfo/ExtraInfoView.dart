@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
+
+import '../Widgets/CustomLongTextFormField.dart';
 
 
 class ExtraInfoView extends StatefulWidget{
@@ -18,7 +21,7 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const SizedBox(height: 20,),
+              const SizedBox(height: 50,),
               // image in the top
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -54,6 +57,60 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
               Text(
                 "we Need Some Additional Info",
                 style: TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 30,),
+              // data form
+              Form(
+                  child: Column(
+                    children: [
+                      // phone number text form field
+                      CustomTextFormField(
+                          label: "phone",
+                          icon: Bootstrap.telephone_fill
+                      ),
+                      const SizedBox(height: 20,),
+                      // date piker button
+                      InkWell(
+                        onTap: (){},
+                        child: Container(
+                          padding:const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(width: 2 , color: Colors.black),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Bootstrap.calendar_date_fill , color: Colors.black,size: 37,),
+                              const SizedBox(width: 10,),
+                              Text("Selected Date" ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20,),
+                      // bio text field
+                      CustomLongTextFormField(
+                          label: "bio",
+                          // controller: viewModel!.bioController,
+                          inputType: TextInputType.text,
+                          // validator: viewModel!.bioValidation
+                      ),
+                      const SizedBox(height: 30,),
+                      // confirm button
+                      // ElevatedButton(
+                      //   onPressed: viewModel!.updateUserData,
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(12.0),
+                      //     child: Row(
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: [
+                      //         Text(viewModel!.local!.gj),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // )
+                    ],
+                  )
               ),
             ],
           ),
