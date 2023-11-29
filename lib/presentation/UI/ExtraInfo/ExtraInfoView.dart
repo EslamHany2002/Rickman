@@ -55,7 +55,7 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
               ),
               const SizedBox(height: 10,),
               Text(
-                "we Need Some Additional Info",
+                "We Need Some Additional Info",
                 style: TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 30,),
@@ -97,18 +97,28 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
                       ),
                       const SizedBox(height: 30,),
                       // confirm button
-                      // ElevatedButton(
-                      //   onPressed: viewModel!.updateUserData,
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(12.0),
-                      //     child: Row(
-                      //       mainAxisAlignment: MainAxisAlignment.center,
-                      //       children: [
-                      //         Text(viewModel!.local!.gj),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // )
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all(Colors.black),
+                          backgroundColor: MaterialStateProperty.all(Colors.black),
+                          elevation: MaterialStateProperty.all(0),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                          textStyle: MaterialStateProperty.all(const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
+                        ),
+                        onPressed: (){},
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("GJ, Let's Start!" , style: TextStyle(color: Colors.white),),
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   )
               ),
