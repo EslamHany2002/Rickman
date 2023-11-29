@@ -41,6 +41,8 @@ dependencies:
   circle_nav_bar: ^2.0.1+1
   flutter_svg: ^2.0.9
   heroicons: ^0.9.0
+  flashy_tab_bar2: ^0.0.6
+  flutter_rounded_date_picker: ^3.0.4
 
 dev_dependencies:
   flutter_test:
