@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:rickman/presentation/UI/ExtraInfo/ExtraInfoView.dart';
 import 'package:rickman/presentation/UI/Login/Login.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomPasswordTextFormField.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
@@ -59,7 +60,7 @@ class Register extends StatelessWidget {
                         textStyle: MaterialStateProperty.all(const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
                       ),
-                      onPressed: () {},
+                      onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ExtraInfoView()));},
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
