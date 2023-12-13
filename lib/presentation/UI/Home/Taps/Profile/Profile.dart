@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:rickman/presentation/UI/Edit%20Profile/EditProfile.dart';
 
 import 'Widgets/CustomButton.dart';
 import 'Widgets/UserProfileDataWidget.dart';
@@ -41,7 +42,7 @@ class Profile extends StatelessWidget{
           UserProfileDataWidget(
 
             buttonTitle: "edit",
-            buttonAction: (){},
+            buttonAction: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => EditProfile()));},
             isEn: true,
           ),
         ],
