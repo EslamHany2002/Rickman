@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:rickman/presentation/UI/Home/Taps/Profile/Profile.dart';
 import '../Widgets/CustomLongTextFormField.dart';
 import '../Widgets/CustomTextFormField.dart';
 
@@ -13,21 +14,18 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-
-
   final _dateProvider = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-
-        title: Center(
-          child: Text(
-              "Update Profile"
-          ),
-        ),
+        leading: InkWell(
+            onTap: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => Profile()));
+            },
+            child: Icon(Icons.arrow_back)),
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -68,7 +66,8 @@ class _EditProfileState extends State<EditProfile> {
                         ]),
                     child: Column(
                       children: [
-                        Image.asset("Assets/Images/Virtecal_Brain_Cancer_Logo.jpg",
+                        Image.asset(
+                          "Assets/Images/Virtecal_Brain_Cancer_Logo.jpg",
                         ),
                       ],
                     ),
@@ -103,7 +102,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 // date piker button
                 TextFormField(
-                  onTap: (){
+                  onTap: () {
                     showCustomDatePicker();
                   },
                   readOnly: true,
@@ -165,30 +164,41 @@ class _EditProfileState extends State<EditProfile> {
                   // validator: value.bioValidation,
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 5,
                 ),
                 TextButton(
                     onPressed: () {},
                     child: Text(
                       "changePassword",
-                      style: TextStyle(fontWeight: FontWeight.bold,color: Colors.black),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
                     )),
                 const SizedBox(
-                  height: 10,
+                  height: 5,
                 ),
                 // confirm button
                 ElevatedButton(
-                  onPressed: () {},
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                      backgroundColor: MaterialStateProperty.all(Colors.black),
+                      elevation: MaterialStateProperty.all(0),
+                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      )),
+                      textStyle: MaterialStateProperty.all(const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
+                    ),
+                    onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Profile()));},
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("updateAccount"),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text("Update Account" ,style:  TextStyle(color: Colors.white , fontSize: 25),),
+                        ),
                       ],
-                    ),
-                  ),
-                )
+                    )
+                ),
               ],
             ),
           ))
@@ -197,7 +207,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  showCustomDatePicker() async{
+  showCustomDatePicker() async {
     DateTime? newDateTime = await showRoundedDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -211,30 +221,61 @@ class _EditProfileState extends State<EditProfile> {
         backgroundHeader: Colors.black,
         colorArrowNext: Colors.black,
         colorArrowPrevious: Colors.black,
-        textStyleButtonAction: const TextStyle(fontSize: 16, color: Colors.black,),
-        textStyleMonthYearHeader: const TextStyle(fontSize: 16, color: Colors.black,),
-        textStyleDayOnCalendarSelected:const TextStyle(fontSize: 16, color: Colors.white,),
-        textStyleDayOnCalendarDisabled:const TextStyle(fontSize: 16, color: Colors.black,),
-        textStyleYearButton: const TextStyle(fontSize: 16, color: Colors.white,),
-        textStyleDayOnCalendar: const TextStyle(fontSize: 16, color: Colors.black,),
-        textStyleDayHeader: const TextStyle(fontSize: 16, color: Colors.black,),
-        textStyleDayButton: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white,),
-        textStyleCurrentDayOnCalendar: const TextStyle(fontSize: 16, color: Colors.black,),
-        textStyleButtonPositive:  const TextStyle(fontSize: 16, color: Colors.black,),
-        textStyleButtonNegative: const TextStyle(fontSize: 16, color: Colors.black,),
+        textStyleButtonAction: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        textStyleMonthYearHeader: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        textStyleDayOnCalendarSelected: const TextStyle(
+          fontSize: 16,
+          color: Colors.white,
+        ),
+        textStyleDayOnCalendarDisabled: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        textStyleYearButton: const TextStyle(
+          fontSize: 16,
+          color: Colors.white,
+        ),
+        textStyleDayOnCalendar: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        textStyleDayHeader: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        textStyleDayButton: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        textStyleCurrentDayOnCalendar: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        textStyleButtonPositive: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
+        textStyleButtonNegative: const TextStyle(
+          fontSize: 16,
+          color: Colors.black,
+        ),
         backgroundHeaderMonth: Colors.white,
         backgroundPicker: Colors.white,
         decorationDateSelected: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.black
-        ),
+            borderRadius: BorderRadius.circular(10), color: Colors.black),
       ),
     );
-    if(newDateTime != null){
+    if (newDateTime != null) {
       setState(() {
         _dateProvider.text = DateFormat.yMd().format(newDateTime);
       });
     }
-
   }
 }
