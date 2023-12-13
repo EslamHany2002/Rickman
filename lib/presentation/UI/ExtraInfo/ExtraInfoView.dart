@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:intl/intl.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
 import '../Widgets/CustomLongTextFormField.dart';
@@ -11,6 +12,23 @@ class ExtraInfoView extends StatefulWidget{
 }
 
 class _ExtraInfoViewState extends State<ExtraInfoView> {
+
+  final _date = TextEditingController();
+
+  Future<void> _showDatePicker() async {
+    DateTime? _picker = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1980),
+      lastDate: DateTime(2024),
+    );
+    if(_picker != null){
+      setState(() {
+        _date.text = DateFormat.yMd().format(_picker);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -70,21 +88,58 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
                       ),
                       const SizedBox(height: 20,),
                       // date piker button
-                      InkWell(
-                        onTap: (){},
-                        child: Container(
-                          padding:const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(width: 2 , color: Colors.black),
+
+                      TextFormField(
+                        onTap: (){
+                          _showDatePicker();
+                        },
+                        readOnly: true,
+                        controller: _date,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        cursorColor: Colors.black,
+                        // keyboardType: inputType,
+                        // validator: (value) => validator(value),
+                        cursorHeight: 20,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(20),
+                          hintText: "Selected Date",
+                          // filled: true,
+                          prefixIcon: Icon(
+                            Bootstrap.calendar_date_fill,
+                            color: Colors.black,
+                            size: 30,
                           ),
-                          child: Row(
-                            children: [
-                              const Icon(Bootstrap.calendar_date_fill , color: Colors.black,size: 37,),
-                              const SizedBox(width: 10,),
-                              Text("Selected Date" ),
-                            ],
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                width: 2,
+                                color: Colors.black,
+                              )),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            ),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                width: 2,
+                                color: Colors.black,
+                              )),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                width: 2,
+                                color: Colors.red,
+                              )),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                width: 2,
+                                color: Colors.red,
+                              )),
                         ),
                       ),
                       const SizedBox(height: 20,),
