@@ -41,30 +41,33 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
             children: [
               const SizedBox(height: 50,),
               // image in the top
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 4),
-                          )
-                        ]),
-                    child: Column(
-                      children: [
-                        Image.asset("Assets/Images/Virtecal_Brain_Cancer_Logo.jpg",
-                        ),
-                      ],
+              InkWell(
+                onTap: (){},
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 4),
+                            )
+                          ]),
+                      child: Column(
+                        children: [
+                          Image.asset("Assets/Images/Virtecal_Brain_Cancer_Logo.jpg",
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 20,),
               Text(
