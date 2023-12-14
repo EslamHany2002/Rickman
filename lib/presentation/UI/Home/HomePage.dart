@@ -1,9 +1,8 @@
-
-import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rickman/presentation/UI/Home/Taps/Profile/Profile.dart';
+
+import 'Taps/Detect/Detect.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -15,8 +14,7 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
   List<Widget> tabItems = [
-    Center(child: Text("0")),
-    Center(child: Text("1")),
+    Detect(),
     Profile(),
 
   ];
@@ -41,11 +39,6 @@ class _HomeState extends State<Home> {
           _selectedIndex = index;
         }),
         items: [
-          FlashyTabBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
-          ),
-
           FlashyTabBarItem(
             icon: Icon(Icons.qr_code_scanner),
             title: Text('Detect'),
