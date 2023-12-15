@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Detect extends StatefulWidget {
   @override
@@ -37,6 +38,8 @@ class _DetectState extends State<Detect> {
     return Colors.white;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -55,7 +58,7 @@ class _DetectState extends State<Detect> {
                 height: 20,
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {_showButtonSheet();},
                 child: Container(
                   width: 400,
                   height: 309,
@@ -216,5 +219,87 @@ class _DetectState extends State<Detect> {
         ),
       ),
     );
+  }
+
+
+  void _showButtonSheet() {
+    showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            padding:
+            EdgeInsets.only(top: MediaQuery.of(context).size.height * .03, bottom: MediaQuery.of(context).size.height * 0.05),
+            children: [
+              // const Text("Pick your Profile Picture",
+              //     textAlign: TextAlign.center,
+              //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              // SizedBox(
+              //   height: MediaQuery.of(context).size.height * .02,
+              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: const CircleBorder(),
+                              fixedSize: Size(MediaQuery.of(context).size.width * .3, MediaQuery.of(context).size.height * 0.15)),
+                          onPressed: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? image =
+                            await picker.pickImage(source: ImageSource.gallery);
+                            // if (image != null) {
+                            //   log('Image path: ${image.path} -- MimeType: ${image.mimeType}');
+                            //   setState(() {
+                            //     _image = image.path;
+                            //   });
+                            //
+                            //   APIs.updateProfilrPicture(File(_image!));
+                            //
+                            //   Navigator.pop(context);
+                            // }
+                          },
+                          child:  Icon(Icons.image,size: 70,color: Colors.black,)),
+
+                      Text("Gallery",style: TextStyle(fontSize: 18),)
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: const CircleBorder(),
+                              fixedSize: Size(MediaQuery.of(context).size.width * .3, MediaQuery.of(context).size.height * 0.15)),
+                          onPressed: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? image =
+                            await picker.pickImage(source: ImageSource.camera);
+                            // if (image != null) {
+                            //   log('Image path: ${image.path}');
+                            //   setState(() {
+                            //     _image = image.path;
+                            //   });
+                            //   APIs.updateProfilrPicture(File(_image!));
+                            //   Navigator.pop(context);
+                            // }
+                          },
+                          child:  Icon(Icons.camera,size: 70,color: Colors.black,)),
+                      
+                      Text("Camera",style: TextStyle(fontSize: 18),)
+
+                    ],
+                  ),
+                ],
+              )
+            ],
+          );
+        });
   }
 }
