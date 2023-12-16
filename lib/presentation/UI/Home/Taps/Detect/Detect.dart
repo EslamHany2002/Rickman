@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +40,7 @@ class _DetectState extends State<Detect> {
     return Colors.white;
   }
 
-
+  File ? _selectedImage ;
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +65,11 @@ class _DetectState extends State<Detect> {
                   width: 400,
                   height: 309,
                   decoration: BoxDecoration(
-                    color: Colors.purple,
+                    color: Colors.black,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Column(
+                  child: _selectedImage != null ? Image.file(_selectedImage!):
+                  Column(
                     children: [
                       Container(
                         width: 400,
@@ -129,7 +132,7 @@ class _DetectState extends State<Detect> {
                     .toList(),
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select gender.';
+                    return 'Choose your filter';
                   }
                   return null;
                 },
@@ -240,40 +243,31 @@ class _DetectState extends State<Detect> {
               // SizedBox(
               //   height: MediaQuery.of(context).size.height * .02,
               // ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: const CircleBorder(),
-                              fixedSize: Size(MediaQuery.of(context).size.width * .3, MediaQuery.of(context).size.height * 0.15)),
-                          onPressed: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image =
-                            await picker.pickImage(source: ImageSource.gallery);
-                            // if (image != null) {
-                            //   log('Image path: ${image.path} -- MimeType: ${image.mimeType}');
-                            //   setState(() {
-                            //     _image = image.path;
-                            //   });
-                            //
-                            //   APIs.updateProfilrPicture(File(_image!));
-                            //
-                            //   Navigator.pop(context);
-                            // }
-                          },
-                          child:  Icon(Icons.image,size: 70,color: Colors.black,)),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: const CircleBorder(),
+                          fixedSize: Size(MediaQuery.of(context).size.width * .3, MediaQuery.of(context).size.height * 0.15)),
+                      onPressed: ()  {
+                        _PickImageFromGallery();
+                      },
+                      child:  Center(child: Icon(Icons.image,size: 70,color: Colors.black,))),
 
-                      Text("Gallery",style: TextStyle(fontSize: 18),)
-                    ],
-                  ),
+                  Text("Gallery",style: TextStyle(fontSize: 18),)
                 ],
               )
             ],
           );
         });
+  }
+
+  Future _PickImageFromGallery() async{
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _selectedImage = File(returnedImage!.path);
+    });
   }
 }
