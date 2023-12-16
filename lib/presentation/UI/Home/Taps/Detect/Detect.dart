@@ -40,7 +40,7 @@ class _DetectState extends State<Detect> {
     return Colors.white;
   }
 
-  File ? _selectedImage ;
+  File? _selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,9 @@ class _DetectState extends State<Detect> {
                 height: 20,
               ),
               InkWell(
-                onTap: () {_showButtonSheet();},
+                onTap: () {
+                  _showButtonSheet();
+                },
                 child: Container(
                   width: 400,
                   height: 309,
@@ -68,37 +70,44 @@ class _DetectState extends State<Detect> {
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: _selectedImage != null ? Image.file(_selectedImage!):
-                  Column(
-                    children: [
-                      Container(
-                        width: 400,
-                        height: 309,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
+                  child: _selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(MediaQuery.of(context).size.height * .02),
+                          child: Image.file(
+                          _selectedImage!,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ))
+                      : Column(
                           children: [
-                            SizedBox(
-                              height: 50,
+                            Container(
+                              width: 400,
+                              height: 309,
+                              decoration: BoxDecoration(
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 50,
+                                  ),
+                                  Image.asset(
+                                    "Assets/Images/Horizontal_Brain_Cancer_Logo for dark.png",
+                                    width: 260,
+                                  ),
+                                  SizedBox(
+                                    height: 35,
+                                  ),
+                                  Text(
+                                    "Tap Here To Pick Your MRI Image",
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                ],
+                              ),
                             ),
-                            Image.asset(
-                              "Assets/Images/Horizontal_Brain_Cancer_Logo for dark.png",
-                              width: 260,
-                            ),
-                            SizedBox(
-                              height: 35,
-                            ),
-                            Text(
-                              "Tap Here To Pick Your MRI Image",
-                              style: TextStyle(color: Colors.white),
-                            )
                           ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               SizedBox(
@@ -224,7 +233,6 @@ class _DetectState extends State<Detect> {
     );
   }
 
-
   void _showButtonSheet() {
     showModalBottomSheet(
         context: context,
@@ -234,8 +242,9 @@ class _DetectState extends State<Detect> {
         builder: (_) {
           return ListView(
             shrinkWrap: true,
-            padding:
-            EdgeInsets.only(top: MediaQuery.of(context).size.height * .03, bottom: MediaQuery.of(context).size.height * 0.05),
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * .03,
+                bottom: MediaQuery.of(context).size.height * 0.05),
             children: [
               // const Text("Pick your Profile Picture",
               //     textAlign: TextAlign.center,
@@ -249,13 +258,22 @@ class _DetectState extends State<Detect> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           shape: const CircleBorder(),
-                          fixedSize: Size(MediaQuery.of(context).size.width * .3, MediaQuery.of(context).size.height * 0.15)),
-                      onPressed: ()  {
+                          fixedSize: Size(
+                              MediaQuery.of(context).size.width * .3,
+                              MediaQuery.of(context).size.height * 0.15)),
+                      onPressed: () {
                         _PickImageFromGallery();
                       },
-                      child:  Center(child: Icon(Icons.image,size: 70,color: Colors.black,))),
-
-                  Text("Gallery",style: TextStyle(fontSize: 18),)
+                      child: Center(
+                          child: Icon(
+                        Icons.image,
+                        size: 70,
+                        color: Colors.black,
+                      ))),
+                  Text(
+                    "Gallery",
+                    style: TextStyle(fontSize: 18),
+                  )
                 ],
               )
             ],
@@ -263,8 +281,9 @@ class _DetectState extends State<Detect> {
         });
   }
 
-  Future _PickImageFromGallery() async{
-    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future _PickImageFromGallery() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
       _selectedImage = File(returnedImage!.path);
