@@ -270,32 +270,6 @@ class _DetectState extends State<Detect> {
                       Text("Gallery",style: TextStyle(fontSize: 18),)
                     ],
                   ),
-                  Column(
-                    children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: const CircleBorder(),
-                              fixedSize: Size(MediaQuery.of(context).size.width * .3, MediaQuery.of(context).size.height * 0.15)),
-                          onPressed: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image =
-                            await picker.pickImage(source: ImageSource.camera);
-                            // if (image != null) {
-                            //   log('Image path: ${image.path}');
-                            //   setState(() {
-                            //     _image = image.path;
-                            //   });
-                            //   APIs.updateProfilrPicture(File(_image!));
-                            //   Navigator.pop(context);
-                            // }
-                          },
-                          child:  Icon(Icons.camera,size: 70,color: Colors.black,)),
-                      
-                      Text("Camera",style: TextStyle(fontSize: 18),)
-
-                    ],
-                  ),
                 ],
               )
             ],
