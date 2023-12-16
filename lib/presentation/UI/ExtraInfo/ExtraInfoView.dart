@@ -24,7 +24,7 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
     );
     if(_picker != null){
       setState(() {
-        _date.text = DateFormat.yMd().format(_picker);
+        _date.text = DateFormat.yMMMMd().format(_picker);
       });
     }
   }
