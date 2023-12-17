@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
@@ -14,6 +17,7 @@ class ExtraInfoView extends StatefulWidget{
 class _ExtraInfoViewState extends State<ExtraInfoView> {
 
   final _date = TextEditingController();
+  File? _selectedImage;
 
   Future<void> _showDatePicker() async {
     DateTime? _picker = await showDatePicker(
@@ -42,31 +46,54 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
               const SizedBox(height: 50,),
               // image in the top
               InkWell(
-                onTap: (){},
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
+                onTap: (){
+                  _showButtonSheet();
+                },
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        )
+                      ]),
+                  child: _selectedImage != null
+                      ? ClipRRect(
+                      borderRadius: BorderRadius.circular(MediaQuery.of(context).size.height * .02),
+                      child: Image.file(
+                        _selectedImage!,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ))
+                      : Column(
+                    children: [
+                      Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 4),
-                            )
-                          ]),
-                      child: Column(
-                        children: [
-                          Image.asset("Assets/Images/Virtecal_Brain_Cancer_Logo.jpg",
-                          ),
-                        ],
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 50,
+                            ),
+                            Image.asset(
+                              "Assets/Images/Horizontal_Brain_Cancer_Logo.png",
+                              width: 260,
+                            ),
+
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20,),
@@ -186,5 +213,99 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
         ),
       ),
     );
+  }
+  void _showButtonSheet() {
+    showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * .03,
+                bottom: MediaQuery.of(context).size.height * 0.05),
+            children: [
+              // const Text("Pick your Profile Picture",
+              //     textAlign: TextAlign.center,
+              //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              // SizedBox(
+              //   height: MediaQuery.of(context).size.height * .02,
+              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: const CircleBorder(),
+                              fixedSize: Size(
+                                  MediaQuery.of(context).size.width * .3,
+                                  MediaQuery.of(context).size.height * 0.15)),
+                          onPressed: () {
+                            _PickImageFromGallery();
+                          },
+                          child: Center(
+                              child: Icon(
+                                Icons.image,
+                                size: 70,
+                                color: Colors.black,
+                              ))),
+                      Text(
+                        "Gallery",
+                        style: TextStyle(fontSize: 18),
+                      )
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: const CircleBorder(),
+                              fixedSize: Size(
+                                  MediaQuery.of(context).size.width * .3,
+                                  MediaQuery.of(context).size.height * 0.15)),
+                          onPressed: () {
+                            _PickImageFromCamera();
+                          },
+                          child: Center(
+                              child: Icon(
+                                Icons.camera,
+                                size: 70,
+                                color: Colors.black,
+                              ))),
+                      Text(
+                        "Camera",
+                        style: TextStyle(fontSize: 18),
+                      )
+                    ],
+                  ),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  Future _PickImageFromGallery() async {
+    final returnedImage =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _selectedImage = File(returnedImage!.path);
+    });
+  }
+
+  Future _PickImageFromCamera() async {
+    final returnedImage =
+    await ImagePicker().pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _selectedImage = File(returnedImage!.path);
+    });
   }
 }
