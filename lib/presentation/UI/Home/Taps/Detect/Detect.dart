@@ -72,12 +72,13 @@ class _DetectState extends State<Detect> {
                   ),
                   child: _selectedImage != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(MediaQuery.of(context).size.height * .02),
+                          borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.height * .02),
                           child: Image.file(
-                          _selectedImage!,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ))
+                            _selectedImage!,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ))
                       : Column(
                           children: [
                             Container(
@@ -200,6 +201,9 @@ class _DetectState extends State<Detect> {
                   ),
                 ),
               ),
+              SizedBox(
+                height: 15,
+              ),
               Row(
                 children: [
                   Checkbox(
@@ -225,6 +229,12 @@ class _DetectState extends State<Detect> {
                     ],
                   ),
                 ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                "Please note that this program is intended to aid in the monitoring of brain tumors. The results should not be construed as definitive or final diagnosis without further medical consultation.",
               )
             ],
           ),
