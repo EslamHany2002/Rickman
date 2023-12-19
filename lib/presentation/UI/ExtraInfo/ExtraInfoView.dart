@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:rickman/presentation/UI/Register/Register.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
 import '../Widgets/CustomLongTextFormField.dart';
@@ -37,13 +38,14 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      appBar: AppBar(leading: InkWell(onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Register()));}, child: Icon(Icons.arrow_back)),),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const SizedBox(height: 50,),
+
               // image in the top
               InkWell(
                 onTap: (){
