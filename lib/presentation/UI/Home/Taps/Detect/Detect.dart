@@ -4,6 +4,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rickman/presentation/UI/Result/result.dart';
 
 class Detect extends StatefulWidget {
   @override
@@ -187,7 +188,7 @@ class _DetectState extends State<Detect> {
                       fontSize: 20,
                       color: Colors.white)),
                 ),
-                onPressed: () {},
+                onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Result()));},
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
