@@ -1,0 +1,18 @@
+import 'package:flutter/material.dart';
+import 'package:rickman/presentation/UI/Home/Taps/Detect/Detect.dart';
+
+class Result extends StatefulWidget {
+  const Result({super.key});
+
+  @override
+  State<Result> createState() => _ResultState();
+}
+
+class _ResultState extends State<Result> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(leading: InkWell(onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Detect()));}, child: Icon(Icons.arrow_back)),),
+    );
+  }
+}
