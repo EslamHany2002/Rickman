@@ -1,6 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:rickman/presentation/UI/Login/Login.dart';
+import 'package:rickman/presentation/UI/Intro/intro.dart';
 
 
 class SplachScreen extends StatelessWidget{
@@ -15,7 +15,7 @@ class SplachScreen extends StatelessWidget{
 
         ),
       ),
-      nextScreen: Login(),
+      nextScreen: Intro(),
       duration: 2000,
 
       splashIconSize: double.infinity,
