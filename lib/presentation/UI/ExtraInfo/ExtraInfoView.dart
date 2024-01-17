@@ -116,7 +116,8 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
                       // phone number text form field
                       CustomTextFormField(
                           label: "phone",
-                          icon: Bootstrap.telephone_fill
+                          icon: Bootstrap.telephone_fill,
+                        validator: phoneValidation,
                       ),
                       const SizedBox(height: 20,),
                       // date piker button
@@ -309,5 +310,15 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
     setState(() {
       _selectedImage = File(returnedImage!.path);
     });
+  }
+
+  String? phoneValidation(String value) {
+    if (value.isEmpty) {
+      return "enterPhoneNumber";
+    }
+    else if (!RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)').hasMatch(value)) {
+      return "enterValidMobileNumber";
+    }
+    return null;
   }
 }
