@@ -5,14 +5,14 @@ class CustomTextFormField extends StatelessWidget {
   String label;
   // TextEditingController controller;
   // TextInputType inputType;
-  // Function validator;
+  Function validator;
   IconData icon;
   CustomTextFormField(
       {
         required this.label,
         // required this.controller,
         // required this.inputType,
-        // required this.validator,
+        required this.validator,
         required this.icon
       });
 
@@ -24,7 +24,7 @@ class CustomTextFormField extends StatelessWidget {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       cursorColor: Colors.black,
       // keyboardType: inputType,
-      // validator: (value) => validator(value),
+      validator: (value) => validator(value),
       cursorHeight: 20,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(20),

@@ -6,13 +6,13 @@ class CustomPasswordTextFormField extends StatefulWidget {
   String label;
   // TextEditingController controller;
   // TextInputType inputType;
-  // Function validator;
+  Function validator;
   IconData icon;
   CustomPasswordTextFormField(
       {required this.label,
         // required this.controller,
         // required this.inputType,
-        // required this.validator,
+        required this.validator,
         required this.icon
       });
 
