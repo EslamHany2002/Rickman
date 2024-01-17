@@ -16,6 +16,7 @@ class _IntroState extends State<Intro> {
   PageController _controller = PageController();
 
   bool onLastPage = false;
+  bool onFirstPage = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,28 +27,45 @@ class _IntroState extends State<Intro> {
           onPageChanged: (index) {
             setState(() {
               onLastPage = (index == 2);
+              onFirstPage = (index == 0);
             });
           },
-          children: [
+          children: const [
             IntroFirstScreen(),
             IntroSecondScreen(),
             IntroThirdScreen(),
           ],
         ),
         Container(
-            alignment: Alignment(0, 0.70),
+          alignment: const Alignment(0.75, -0.85),
+          child: onLastPage
+              ? GestureDetector(onTap: () {}, child: const Text(""))
+              : GestureDetector(
+                  onTap: () {
+                    _controller.jumpToPage(2);
+                  },
+                  child: const Text("Skip", style: TextStyle(fontSize: 18))),
+        ),
+        Container(
+            alignment: const Alignment(0, 0.75),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                GestureDetector(
-                    onTap: () {
-                      _controller.jumpToPage(2);
-                    },
-                    child: Text("Skip")),
+                onFirstPage
+                    ? GestureDetector(onTap: () {}, child: const Text(""))
+                    : GestureDetector(
+                        onTap: () {
+                          _controller.previousPage(duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+                          // _controller.jumpToPage(2);
+                        },
+                        child: const Text(
+                          "Back",
+                          style: TextStyle(fontSize: 18),
+                        )),
                 SmoothPageIndicator(
                     controller: _controller,
                     count: 3,
-                    effect: ExpandingDotsEffect()),
+                    effect: const ExpandingDotsEffect()),
                 onLastPage
                     ? GestureDetector(
                         onTap: () {
@@ -58,14 +76,20 @@ class _IntroState extends State<Intro> {
                             }),
                           );
                         },
-                        child: Text("Done"))
+                        child: const Text(
+                          "Done",
+                          style: TextStyle(fontSize: 18),
+                        ))
                     : GestureDetector(
                         onTap: () {
                           _controller.nextPage(
-                              duration: Duration(milliseconds: 500),
+                              duration: const Duration(milliseconds: 500),
                               curve: Curves.easeIn);
                         },
-                        child: Text("Next")),
+                        child: const Text(
+                          "Next",
+                          style: TextStyle(fontSize: 18),
+                        )),
               ],
             ))
       ],
