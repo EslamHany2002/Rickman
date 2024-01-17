@@ -86,7 +86,7 @@ class _EditProfileState extends State<EditProfile> {
                     label: "name",
                     // controller: value.nameController,
                     // inputType: TextInputType.name,
-                    // validator: value.nameValidation,
+                    validator: nameValidation,
                     icon: EvaIcons.file),
                 const SizedBox(
                   height: 20,
@@ -95,7 +95,7 @@ class _EditProfileState extends State<EditProfile> {
                     label: "phone",
                     // controller: value.phoneController,
                     // inputType: TextInputType.phone,
-                    // validator: value.phoneValidation,
+                    validator: phoneValidation,
                     icon: EvaIcons.phone),
                 const SizedBox(
                   height: 20,
@@ -277,5 +277,26 @@ class _EditProfileState extends State<EditProfile> {
         _dateProvider.text = DateFormat.yMd().format(newDateTime);
       });
     }
+  }
+
+  String? nameValidation(String name) {
+    if (name.isEmpty) {
+      return "nameCantBeEmpty";
+    } else if (RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%-]').hasMatch(name)) {
+      return "invalidName";
+    } else {
+      return null;
+    }
+  }
+
+  // mobile validation function to check for the phone number
+  String? phoneValidation(String value) {
+    if (value.isEmpty) {
+      return "enterPhoneNumber";
+    }
+    else if (!RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)').hasMatch(value)) {
+      return "enterValidMobileNumber";
+    }
+    return null;
   }
 }
