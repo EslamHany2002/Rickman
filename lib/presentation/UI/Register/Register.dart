@@ -7,6 +7,7 @@ import 'package:rickman/presentation/UI/Widgets/CustomPasswordTextFormField.dart
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
 class Register extends StatelessWidget {
+  TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -32,19 +33,19 @@ class Register extends StatelessWidget {
               Form(
                   child: Column(
                 children: [
-                  CustomTextFormField(label: "Name", icon: EvaIcons.person),
+                  CustomTextFormField(label: "Name", icon: EvaIcons.person,validator: nameValidation,),
                   const SizedBox(
                     height: 20,
                   ),
-                  CustomTextFormField(label: "Email", icon: EvaIcons.email),
+                  CustomTextFormField(label: "Email", icon: EvaIcons.email, validator: emailValidation,),
                   const SizedBox(
                     height: 20,
                   ),
-                  CustomPasswordTextFormField(label: "password", icon: EvaIcons.lock),
+                  CustomPasswordTextFormField(label: "password", icon: EvaIcons.lock,validator: passwordValidation,),
                   const SizedBox(
                     height: 20,
                   ),
-                  CustomPasswordTextFormField(label: "Confirm password", icon: EvaIcons.lock),
+                  CustomPasswordTextFormField(label: "Confirm password", icon: EvaIcons.lock,validator: passwordConfirmationValidation,),
                   const SizedBox(
                     height: 30,
                   ),
@@ -86,7 +87,7 @@ class Register extends StatelessWidget {
                         onPressed: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Login()));},
                         child: Text(
                           "Login",
-                          style: TextStyle(color: Colors.black45 , fontSize: 15),
+                          style: TextStyle(color: Colors.black45 , fontSize: 15 , decoration: TextDecoration.underline),
                         ),
                       )
                     ],
@@ -98,5 +99,48 @@ class Register extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String? nameValidation(String name) {
+    if (name.isEmpty) {
+      return "nameCantBeEmpty";
+    } else if (RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%-]').hasMatch(name)) {
+      return "invalidName";
+    } else {
+      return null;
+    }
+  }
+
+  // validate on the email form
+  String? emailValidation(String input) {
+    if (input.isEmpty) {
+      return "emailCantBeEmpty";
+    } else if (!RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+"
+    r"@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+    r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+    r"{0,253}[a-zA-Z0-9])?)*$")
+        .hasMatch(input)) {
+      return "Enter a Valid Email";
+    }
+    return null;
+  }
+
+  String? passwordValidation(String input) {
+    if (input.isEmpty) {
+      return "passwordCantBeEmpty";
+    } else if (input.length < 8) {
+      return "invalidPasswordLength";
+    }
+    return null;
+  }
+
+  // validate the password confirmation is not empty and the same as the password
+  String? passwordConfirmationValidation(String input) {
+    if (input.isEmpty) {
+      return "passwordCantBeEmpty";
+    } else if (input != passwordController.text) {
+      return "passwordDoseNotMatch";
+    }
+    return null;
   }
 }
