@@ -30,6 +30,7 @@ class _ForgitState extends State<Forgit> {
                   CustomTextFormField(
                     label: "Enter your Email",
                     icon: HeroIcons.envelope,
+                    validator: emailValidation,
                   ),
                   const SizedBox(height:25,),
                   ElevatedButton(
@@ -61,5 +62,17 @@ class _ForgitState extends State<Forgit> {
         ),
       ),
     );
+  }
+  String? emailValidation(String input) {
+    if (input.isEmpty) {
+      return "emailCantBeEmpty";
+    } else if (!RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+"
+    r"@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+    r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+    r"{0,253}[a-zA-Z0-9])?)*$")
+        .hasMatch(input)) {
+      return "enterAValidEmail";
+    }
+    return null;
   }
 }
