@@ -13,17 +13,19 @@ class Forgit extends StatefulWidget {
 class _ForgitState extends State<Forgit> {
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(onTap: (){Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Login()));}, child: Icon(Icons.arrow_back)),
-      ),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              SvgPicture.asset("Assets/SVG/Forgot password-bro 1.svg"),
+              Container(
+                width: size.width,
+                  height: size.height * 0.380,
+                  child: SvgPicture.asset("Assets/SVG/Forgot password-bro 1.svg")),
               Form(
                   child: Column(
                 children: [
@@ -32,7 +34,7 @@ class _ForgitState extends State<Forgit> {
                     icon: HeroIcons.envelope,
                     validator: emailValidation,
                   ),
-                  const SizedBox(height:25,),
+                   SizedBox(height: size.height * 0.025),
                   ElevatedButton(
                       style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.all(Colors.white),
