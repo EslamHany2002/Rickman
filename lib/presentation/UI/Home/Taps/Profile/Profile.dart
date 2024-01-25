@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:rickman/presentation/UI/About%20us/AboutUs.dart';
 import 'package:rickman/presentation/UI/Edit%20Profile/EditProfile.dart';
+import 'package:rickman/presentation/UI/Feedback/Feedback.dart';
 import 'package:rickman/presentation/UI/Login/Login.dart';
 import 'package:rickman/presentation/UI/Widgets/Theme%20Switch.dart';
 import 'Widgets/CustomButton.dart';
@@ -33,7 +35,7 @@ class Profile extends StatelessWidget {
               CustomButton(
                 title: "Edit",
                 action: () {
-                  Navigator.pushReplacement(context,
+                  Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const EditProfile()));
                 },
                 icon: EvaIcons.edit_2_outline,
@@ -43,7 +45,10 @@ class Profile extends StatelessWidget {
               ),
               CustomButton(
                 title: "Feedback",
-                action: () {},
+                action: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const FeedbackPage()));
+                },
                 icon: EvaIcons.smiling_face_outline,
               ),
               const SizedBox(
@@ -51,7 +56,10 @@ class Profile extends StatelessWidget {
               ),
               CustomButton(
                 title: "AboutUs",
-                action: () {},
+                action: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const AboutUs()));
+                },
                 icon: Bootstrap.info_circle,
               ),
               const SizedBox(
