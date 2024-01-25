@@ -12,6 +12,7 @@ class Detect extends StatefulWidget {
 }
 
 class _DetectState extends State<Detect> {
+
   final List<String> genderItems = [
     'None',
     'Edge',
@@ -45,6 +46,7 @@ class _DetectState extends State<Detect> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     // TODO: implement build
     return Scaffold(
       body: SingleChildScrollView(
@@ -188,7 +190,7 @@ class _DetectState extends State<Detect> {
                       fontSize: 20,
                       color: Colors.white)),
                 ),
-                onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Result()));},
+                onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (_) => Result()));},
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
@@ -217,15 +219,20 @@ class _DetectState extends State<Detect> {
                       });
                     },
                   ),
+                  // SizedBox(width: 15,),
                   Column(
                     children: [
-                      Text(
-                        "You agree that we are not responsible",
-                        textAlign: TextAlign.left,
+                      Container(
+                        width: size.width*0.690,
+                        child: Text(
+                          "You agree that we are not responsible",
+                        ),
                       ),
-                      Text(
-                        "for considering these results ",
-                        textAlign: TextAlign.left,
+                      Container(
+                        width: size.width*0.690,
+                        child: Text(
+                          "for considering these results ",
+                        ),
                       ),
                     ],
                   ),
@@ -257,34 +264,81 @@ class _DetectState extends State<Detect> {
                 top: MediaQuery.of(context).size.height * .03,
                 bottom: MediaQuery.of(context).size.height * 0.05),
             children: [
-              // const Text("Pick your Profile Picture",
-              //     textAlign: TextAlign.center,
-              //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-              // SizedBox(
-              //   height: MediaQuery.of(context).size.height * .02,
-              // ),
+              const Text("Pick your MRI Image ",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * .02,
+              ),
               Column(
                 children: [
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: const CircleBorder(),
-                          fixedSize: Size(
-                              MediaQuery.of(context).size.width * .3,
-                              MediaQuery.of(context).size.height * 0.15)),
-                      onPressed: () {
-                        _PickImageFromGallery();
-                      },
-                      child: Center(
-                          child: Icon(
-                        Icons.image,
-                        size: 70,
-                        color: Colors.black,
-                      ))),
-                  Text(
-                    "Gallery",
-                    style: TextStyle(fontSize: 18),
-                  )
+                  Container(
+                    width: MediaQuery.of(context).size.width*0.5,
+                    child: ElevatedButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                          MaterialStateProperty.all(Colors.black),
+                          backgroundColor:
+                          MaterialStateProperty.all(Colors.black),
+                          elevation: MaterialStateProperty.all(0),
+                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          )),
+                          textStyle: MaterialStateProperty.all(const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.white)),
+                        ),
+                        onPressed: () {
+                          _PickImageFromGallery();
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                "Gallery",
+                                style:
+                                TextStyle(color: Colors.white, fontSize: 23),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                  // ElevatedButton(
+                  //     style: ButtonStyle(
+                  //       foregroundColor:
+                  //       MaterialStateProperty.all(Colors.black),
+                  //       backgroundColor:
+                  //       MaterialStateProperty.all(Colors.black),
+                  //       elevation: MaterialStateProperty.all(0),
+                  //       shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(10),
+                  //       )),
+                  //       textStyle: MaterialStateProperty.all(const TextStyle(
+                  //           fontWeight: FontWeight.bold,
+                  //           fontSize: 20,
+                  //           color: Colors.white)),
+                  //     ),
+                  //     onPressed: () {
+                  //       _PickImageFromCamera();
+                  //       // Navigator.pushReplacement(
+                  //       //     context, MaterialPageRoute(builder: (_) => Home()));
+                  //     },
+                  //     child: const Row(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: [
+                  //         Padding(
+                  //           padding: EdgeInsets.all(10),
+                  //           child: Text(
+                  //             "camera",
+                  //             style:
+                  //             TextStyle(color: Colors.white, fontSize: 23),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     )),
                 ],
               )
             ],
