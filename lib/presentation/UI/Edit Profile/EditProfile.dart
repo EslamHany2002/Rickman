@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rickman/presentation/UI/Home/Taps/Profile/Profile.dart';
 import '../Widgets/CustomLongTextFormField.dart';
@@ -15,41 +18,41 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final _dateProvider = TextEditingController();
+  File? _selectedImage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: InkWell(
-            onTap: () {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => Profile()));
-            },
-            child: Icon(Icons.arrow_back)),
+        elevation: 0.0,
       ),
       body: SingleChildScrollView(
           child: Column(
         children: [
           const SizedBox(
-            height: 20,
+            height: 5,
           ),
           //Image Picker
           InkWell(
-            onTap: () {},
+            onTap: () {_showButtonSheet();},
             child: Container(
               width: 200,
               height: 200,
               decoration: BoxDecoration(
-                  color: Colors.purple,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
-                    )
-                  ]),
-              child: Column(
+                  ),
+              child: _selectedImage != null
+                  ? ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                      MediaQuery.of(context).size.height * .02),
+                  child: Image.file(
+                    _selectedImage!,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ))
+                  :Column(
                 children: [
                   Container(
                     width: 200,
@@ -59,11 +62,12 @@ class _EditProfileState extends State<EditProfile> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withOpacity(0.154),
                             blurRadius: 20,
                             offset: const Offset(0, 4),
                           )
-                        ]),
+                        ]
+                      ),
                     child: Column(
                       children: [
                         Image.asset(
@@ -87,7 +91,7 @@ class _EditProfileState extends State<EditProfile> {
                     // controller: value.nameController,
                     // inputType: TextInputType.name,
                     validator: nameValidation,
-                    icon: EvaIcons.file),
+                    icon: EvaIcons.person),
                 const SizedBox(
                   height: 20,
                 ),
@@ -116,7 +120,7 @@ class _EditProfileState extends State<EditProfile> {
                     contentPadding: const EdgeInsets.all(20),
                     hintText: "Selected Date",
                     // filled: true,
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Bootstrap.calendar_date_fill,
                       color: Colors.black,
                       size: 30,
@@ -168,10 +172,10 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 TextButton(
                     onPressed: () {},
-                    child: Text(
+                    child: const Text(
                       "changePassword",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black),
+                          fontWeight: FontWeight.bold, color: Colors.black, decoration: TextDecoration.underline),
                     )),
                 const SizedBox(
                   height: 5,
@@ -189,11 +193,11 @@ class _EditProfileState extends State<EditProfile> {
                           fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
                     ),
                     onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Profile()));},
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(10),
+                          padding: EdgeInsets.all(10),
                           child: Text("Update Account" ,style:  TextStyle(color: Colors.white , fontSize: 25),),
                         ),
                       ],
@@ -298,5 +302,116 @@ class _EditProfileState extends State<EditProfile> {
       return "enterValidMobileNumber";
     }
     return null;
+  }
+
+  void _showButtonSheet() {
+    showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        builder: (_) {
+          return ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * .03,
+                bottom: MediaQuery.of(context).size.height * 0.05),
+            children: [
+              const Text("Pick your Profile Picture you want",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * .02,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                      style: ButtonStyle(
+                        foregroundColor:
+                        MaterialStateProperty.all(Colors.black),
+                        backgroundColor:
+                        MaterialStateProperty.all(Colors.black),
+                        elevation: MaterialStateProperty.all(0),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        )),
+                        textStyle: MaterialStateProperty.all(const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.white)),
+                      ),
+                      onPressed: () {
+                        _PickImageFromGallery();
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              "Gallery",
+                              style:
+                              TextStyle(color: Colors.white, fontSize: 23),
+                            ),
+                          ),
+                        ],
+                      )),
+                  ElevatedButton(
+                      style: ButtonStyle(
+                        foregroundColor:
+                        MaterialStateProperty.all(Colors.black),
+                        backgroundColor:
+                        MaterialStateProperty.all(Colors.black),
+                        elevation: MaterialStateProperty.all(0),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        )),
+                        textStyle: MaterialStateProperty.all(const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.white)),
+                      ),
+                      onPressed: () {
+                        _PickImageFromCamera();
+                        // Navigator.pushReplacement(
+                        //     context, MaterialPageRoute(builder: (_) => Home()));
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              "camera",
+                              style:
+                              TextStyle(color: Colors.white, fontSize: 23),
+                            ),
+                          ),
+                        ],
+                      )),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  Future _PickImageFromGallery() async {
+    final returnedImage =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _selectedImage = File(returnedImage!.path);
+    });
+  }
+
+  Future _PickImageFromCamera() async {
+    final returnedImage =
+    await ImagePicker().pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _selectedImage = File(returnedImage!.path);
+    });
   }
 }
