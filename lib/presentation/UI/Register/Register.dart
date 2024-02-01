@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:rickman/presentation/UI/ExtraInfo/ExtraInfoView.dart';
 import 'package:rickman/presentation/UI/Login/Login.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomPasswordTextFormField.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
@@ -13,7 +13,23 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  // TextEditingController passwordConfirmationController = TextEditingController();
+
+  Future<void> createUser() async {
+    String name = nameController.text;
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    FirebaseFirestore.instance.collection("users").add(<String, dynamic>{
+      "userName": name,
+      "email": email,
+      "password": password,
+    });
+    Navigator.push(context, MaterialPageRoute(builder: (_) => Login()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,33 +56,43 @@ class _RegisterState extends State<Register> {
                 children: [
                   CustomTextFormField(
                     label: "Name",
+                    controller: nameController,
+                    inputType: TextInputType.name,
                     icon: EvaIcons.person,
                     validator: nameValidation,
                   ),
                   SizedBox(
                     height: size.height * 0.025,
                   ),
+
                   CustomTextFormField(
                     label: "Email",
+                    controller: emailController,
+                    inputType: TextInputType.emailAddress,
                     icon: EvaIcons.email,
                     validator: emailValidation,
                   ),
                   SizedBox(
                     height: size.height * 0.025,
                   ),
+
                   CustomPasswordTextFormField(
                     label: "password",
+                    controller: passwordController,
+                    inputType: TextInputType.visiblePassword,
                     icon: EvaIcons.lock,
                     validator: passwordValidation,
                   ),
                   SizedBox(
                     height: size.height * 0.025,
                   ),
-                  CustomPasswordTextFormField(
-                    label: "Confirm password",
-                    icon: EvaIcons.lock,
-                    validator: passwordConfirmationValidation,
-                  ),
+                  // CustomPasswordTextFormField(
+                  //   label: "Confirm password",
+                  //   controller: passwordConfirmationController,
+                  //   inputType: TextInputType.visiblePassword,
+                  //   icon: EvaIcons.lock,
+                  //   validator: passwordConfirmationValidation,
+                  // ),
                   SizedBox(
                     height: size.height * 0.025,
                   ),
@@ -87,8 +113,7 @@ class _RegisterState extends State<Register> {
                             color: Colors.white)),
                       ),
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => ExtraInfoView()));
+                        createUser();
                       },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
