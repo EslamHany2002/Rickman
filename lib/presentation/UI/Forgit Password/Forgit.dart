@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:rickman/presentation/UI/Login/Login.dart';
+
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
 class Forgit extends StatefulWidget {
@@ -11,6 +11,7 @@ class Forgit extends StatefulWidget {
 }
 
 class _ForgitState extends State<Forgit> {
+  final TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -30,6 +31,8 @@ class _ForgitState extends State<Forgit> {
                   child: Column(
                 children: [
                   CustomTextFormField(
+                    controller: emailController,
+                    inputType: TextInputType.emailAddress,
                     label: "Enter your Email",
                     icon: HeroIcons.envelope,
                     validator: emailValidation,
