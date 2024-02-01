@@ -1,18 +1,106 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rickman/presentation/UI/Forgit%20Password/Forgit.dart';
 import 'package:rickman/presentation/UI/Home/HomePage.dart';
 import 'package:rickman/presentation/UI/Register/Register.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomPasswordTextFormField.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
 
   @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
+    Future<void> loginUser(BuildContext context) async {
+      String email = emailController.text;
+      String password = passwordController.text;
+
+      // Check if user with given email and password exists in Firestore
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .where('password', isEqualTo: password)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // User found, login successful
+        print("Login successful for email: $email");
+
+        // Access user data from the first document in the query result
+        print("User data from Firestore: ${querySnapshot.docs.first.data()}");
+
+        // Navigate to the home page
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => Home()),
+        );
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            Future.delayed(Duration(seconds: 2), () {
+              Navigator.of(context).pop(true);
+            });
+            return AlertDialog(
+              title: Text("Login correct"),
+              content: Container(
+                height: size.height * 0.13,
+                child: Column(
+                  children: [
+                    Lottie.asset("Assets/Animations/correct.json"),
+                    Text("Welcome back"),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      } else {
+        // User not found, login failed
+        print("Login failed. User not found for email: $email");
+
+        // Show error message on the screen
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            Future.delayed(Duration(seconds: 2), () {
+              Navigator.of(context).pop(true);
+            });
+            return AlertDialog(
+              title: Text("Invalid Email or Password"),
+            // title: Row(
+            //   children: [
+            //     const Icon(Icons.error_outline, color: Colors.red),
+            //     const SizedBox(width: 10),
+            //     const Text("Error"),
+            //   ],
+            // ),
+            content: RichText(
+              text: TextSpan(
+                children: [
+                  WidgetSpan(
+                    child: Lottie.asset(
+                        "Assets/Animations/Animation - 1706790575662.json"),
+                    alignment: PlaceholderAlignment.middle,
+                  ),
+                ],
+              ),
+            ),
+            );
+          }
+        );
+      }
+    }
+
     // TODO: implement build
     return Scaffold(
       body: SingleChildScrollView(
@@ -35,6 +123,8 @@ class Login extends StatelessWidget {
                   child: Column(
                 children: [
                   CustomTextFormField(
+                    inputType: TextInputType.emailAddress,
+                    controller: emailController,
                     label: "Email",
                     icon: EvaIcons.email,
                     validator: emailValidation,
@@ -42,7 +132,10 @@ class Login extends StatelessWidget {
                   SizedBox(
                     height: size.height * 0.02,
                   ),
+
                   CustomPasswordTextFormField(
+                    controller: passwordController,
+                    inputType: TextInputType.visiblePassword,
                     label: "password",
                     icon: EvaIcons.lock,
                     validator: passwordValidation,
@@ -87,8 +180,7 @@ class Login extends StatelessWidget {
                             color: Colors.white)),
                       ),
                       onPressed: () {
-                        Navigator.pushReplacement(
-                            context, MaterialPageRoute(builder: (_) => Home()));
+                        loginUser(context);
                       },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -129,19 +221,21 @@ class Login extends StatelessWidget {
                       )
                     ],
                   ),
-                  SizedBox(height: size.height*0.03,),
+                  SizedBox(
+                    height: size.height * 0.03,
+                  ),
                   Container(
                     height: size.height * 0.07,
-                    width: size.width ,
-
+                    width: size.width,
                     child: ElevatedButton.icon(
                         style: ButtonStyle(
                           foregroundColor:
-                          MaterialStateProperty.all(Colors.black),
+                              MaterialStateProperty.all(Colors.black),
                           backgroundColor:
-                          MaterialStateProperty.all(Colors.black),
+                              MaterialStateProperty.all(Colors.black),
                           elevation: MaterialStateProperty.all(0),
-                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          shape:
+                              MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           )),
                           textStyle: MaterialStateProperty.all(const TextStyle(
@@ -149,7 +243,10 @@ class Login extends StatelessWidget {
                               fontSize: 19,
                               color: Colors.white)),
                         ),
-                        icon: Image.asset("Assets/Images/google.png",height: size.height * 0.045,),
+                        icon: Image.asset(
+                          "Assets/Images/google.png",
+                          height: size.height * 0.045,
+                        ),
                         onPressed: () {},
                         label: Text(
                           "Sign Up with Google",
@@ -167,13 +264,13 @@ class Login extends StatelessWidget {
 
   String? emailValidation(String input) {
     if (input.isEmpty) {
-      return "emailCantBeEmpty";
+      return "email Cant Be Empty";
     } else if (!RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+"
             r"@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
             r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
             r"{0,253}[a-zA-Z0-9])?)*$")
         .hasMatch(input)) {
-      return "enterAValidEmail";
+      return "enter AValid Email";
     }
     return null;
   }
