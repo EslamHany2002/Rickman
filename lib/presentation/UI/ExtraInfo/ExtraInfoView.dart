@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:rickman/presentation/UI/Register/Register.dart';
+
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
 
 import '../Widgets/CustomLongTextFormField.dart';
@@ -15,6 +15,7 @@ class ExtraInfoView extends StatefulWidget {
 }
 
 class _ExtraInfoViewState extends State<ExtraInfoView> {
+  final TextEditingController phoneController = TextEditingController();
   final _date = TextEditingController();
   File? _selectedImage;
 
@@ -118,6 +119,8 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
                 children: [
                   // phone number text form field
                   CustomTextFormField(
+                    controller: phoneController,
+                    inputType: TextInputType.phone,
                     label: "phone",
                     icon: Bootstrap.telephone_fill,
                     validator: phoneValidation,
