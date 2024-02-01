@@ -3,24 +3,26 @@ import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
   String label;
-  // TextEditingController controller;
-  // TextInputType inputType;
+  TextEditingController controller;
+  TextInputType inputType;
   Function validator;
   IconData icon;
+  // Text change;
   CustomTextFormField(
-      {
+      {super.key,
         required this.label,
-        // required this.controller,
-        // required this.inputType,
+        required this.controller,
+        required this.inputType,
         required this.validator,
-        required this.icon
+        required this.icon,
+        // required this.change
       });
 
   @override
   Widget build(BuildContext context) {
 
     return TextFormField(
-      // controller: controller,
+      controller: controller,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       cursorColor: Colors.black,
       // keyboardType: inputType,

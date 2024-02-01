@@ -4,14 +4,14 @@ import 'package:icons_plus/icons_plus.dart';
 
 class CustomPasswordTextFormField extends StatefulWidget {
   String label;
-  // TextEditingController controller;
-  // TextInputType inputType;
+  TextEditingController controller;
+  TextInputType inputType;
   Function validator;
   IconData icon;
   CustomPasswordTextFormField(
-      {required this.label,
-        // required this.controller,
-        // required this.inputType,
+      {super.key, required this.label,
+        required this.controller,
+        required this.inputType,
         required this.validator,
         required this.icon
       });
@@ -27,7 +27,7 @@ class _CustomPasswordTextFormFieldState extends State<CustomPasswordTextFormFiel
   Widget build(BuildContext context) {
 
     return TextFormField(
-      // controller: widget.controller,
+      controller: widget.controller,
       autovalidateMode: AutovalidateMode.onUserInteraction,
 
       cursorColor: Colors.black,
