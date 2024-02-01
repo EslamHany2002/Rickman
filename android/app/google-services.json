@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "356610947569",
+    "firebase_url": "https://rickman-de167-default-rtdb.firebaseio.com",
+    "project_id": "rickman-de167",
+    "storage_bucket": "rickman-de167.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356610947569:android:4be40bad971416c59aac50",
+        "android_client_info": {
+          "package_name": "com.example.rickman"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3U0uOGFASKgtYUetd6aP1cW3cgHH67m4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
