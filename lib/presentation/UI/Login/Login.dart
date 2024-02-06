@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:lottie/lottie.dart';
+import 'package:rickman/auth/authenticationServices.dart';
 import 'package:rickman/presentation/UI/Forgit%20Password/Forgit.dart';
-import 'package:rickman/presentation/UI/Home/HomePage.dart';
 import 'package:rickman/presentation/UI/Register/Register.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomPasswordTextFormField.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomTextFormField.dart';
@@ -22,83 +20,10 @@ class _LoginState extends State<Login> {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
 
-    Future<void> loginUser(BuildContext context) async {
-      String email = emailController.text;
-      String password = passwordController.text;
-
-      // Check if user with given email and password exists in Firestore
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .where('password', isEqualTo: password)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        // User found, login successful
-        print("Login successful for email: $email");
-
-        // Access user data from the first document in the query result
-        print("User data from Firestore: ${querySnapshot.docs.first.data()}");
-
-        // Navigate to the home page
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => Home()),
-        );
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            Future.delayed(Duration(seconds: 2), () {
-              Navigator.of(context).pop(true);
-            });
-            return AlertDialog(
-              title: Text("Login correct"),
-              content: Container(
-                height: size.height * 0.13,
-                child: Column(
-                  children: [
-                    Lottie.asset("Assets/Animations/correct.json"),
-                    Text("Welcome back"),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      } else {
-        // User not found, login failed
-        print("Login failed. User not found for email: $email");
-
-        // Show error message on the screen
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            Future.delayed(Duration(seconds: 2), () {
-              Navigator.of(context).pop(true);
-            });
-            return AlertDialog(
-              title: Text("Invalid Email or Password"),
-            // title: Row(
-            //   children: [
-            //     const Icon(Icons.error_outline, color: Colors.red),
-            //     const SizedBox(width: 10),
-            //     const Text("Error"),
-            //   ],
-            // ),
-            content: RichText(
-              text: TextSpan(
-                children: [
-                  WidgetSpan(
-                    child: Lottie.asset(
-                        "Assets/Animations/Animation - 1706790575662.json"),
-                    alignment: PlaceholderAlignment.middle,
-                  ),
-                ],
-              ),
-            ),
-            );
-          }
-        );
-      }
+    void dispose() {
+      emailController.dispose();
+      passwordController.dispose();
+      super.dispose();
     }
 
     // TODO: implement build
@@ -180,7 +105,9 @@ class _LoginState extends State<Login> {
                             color: Colors.white)),
                       ),
                       onPressed: () {
-                        loginUser(context);
+                        AuthenticationServices().signIn(context,
+                            emailController.text, passwordController.text);
+                        // loginUser(context);
                       },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -247,7 +174,9 @@ class _LoginState extends State<Login> {
                           "Assets/Images/google.png",
                           height: size.height * 0.045,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          AuthenticationServices().signInWithGoogle(context);
+                        },
                         label: Text(
                           "Sign Up with Google",
                           style: TextStyle(color: Colors.white),
