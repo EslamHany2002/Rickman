@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:rickman/presentation/UI/Home/Taps/Profile/Profile.dart';
-import '../Widgets/CustomLongTextFormField.dart';
 import '../Widgets/CustomTextFormField.dart';
 
 class EditProfile extends StatefulWidget {
@@ -17,6 +15,8 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
   final _dateProvider = TextEditingController();
   File? _selectedImage;
 
@@ -86,10 +86,11 @@ class _EditProfileState extends State<EditProfile> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
+                SizedBox(height: 20,),
                 CustomTextFormField(
                     label: "name",
-                    // controller: value.nameController,
-                    // inputType: TextInputType.name,
+                    controller: nameController,
+                    inputType: TextInputType.name,
                     validator: nameValidation,
                     icon: EvaIcons.person),
                 const SizedBox(
@@ -97,8 +98,8 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 CustomTextFormField(
                     label: "phone",
-                    // controller: value.phoneController,
-                    // inputType: TextInputType.phone,
+                    controller: phoneController,
+                    inputType: TextInputType.phone,
                     validator: phoneValidation,
                     icon: EvaIcons.phone),
                 const SizedBox(
@@ -161,14 +162,14 @@ class _EditProfileState extends State<EditProfile> {
                 const SizedBox(
                   height: 20,
                 ),
-                CustomLongTextFormField(
-                  label: "bio",
-                  // controller: value.bioController,
-                  inputType: TextInputType.text,
-                  // validator: value.bioValidation,
-                ),
+                // CustomLongTextFormField(
+                //   label: "bio",
+                //   // controller: value.bioController,
+                //   inputType: TextInputType.text,
+                //   // validator: value.bioValidation,
+                // ),
                 const SizedBox(
-                  height: 5,
+                  height: 75,
                 ),
                 TextButton(
                     onPressed: () {},
