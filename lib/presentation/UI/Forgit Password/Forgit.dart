@@ -1,3 +1,6 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -11,6 +14,7 @@ class Forgit extends StatefulWidget {
 }
 
 class _ForgitState extends State<Forgit> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -28,6 +32,7 @@ class _ForgitState extends State<Forgit> {
                   height: size.height * 0.380,
                   child: SvgPicture.asset("Assets/SVG/Forgot password-bro 1.svg")),
               Form(
+                  key: _formKey,
                   child: Column(
                 children: [
                   CustomTextFormField(
@@ -49,13 +54,15 @@ class _ForgitState extends State<Forgit> {
                         textStyle: MaterialStateProperty.all(const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black45)),
                       ),
-                      onPressed: (){},
+                      onPressed: () {
+                        sendPasswordResetEmail();
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Send Email"),
+                            Text("Reset Password"),
                           ],
                         ),
                       )
@@ -68,6 +75,84 @@ class _ForgitState extends State<Forgit> {
       ),
     );
   }
+
+  void sendPasswordResetEmail() async {
+    if(emailController.text == ""){
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'error',
+          desc: 'Write the email please',
+        ).show();
+        return;
+      }
+    if (_formKey.currentState!.validate()) {
+      try {
+        showDialog(
+          context: context,
+          builder: (context) => Center(child: CircularProgressIndicator()),
+        );
+
+        // Check if email exists in Firestore first
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users') // Replace 'users' with your collection name
+            .where('email', isEqualTo: emailController.text.trim())
+            .get();
+
+        if (userDoc.docs.isEmpty) {
+          throw FirebaseAuthException(code: 'user-not-found');
+        }
+
+        // Email exists, proceed to send reset email
+        await FirebaseAuth.instance.sendPasswordResetEmail(
+          email: emailController.text.trim(),
+        );
+
+        Navigator.pop(context); // Close the loading dialog
+        AwesomeDialog(
+              context: context,
+              dialogType: DialogType.success,
+              animType: AnimType.rightSlide,
+              title: 'success',
+              desc: 'Password reset email sent!',
+            ).show();
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('Password reset email sent!'),
+        //   ),
+        // );
+      } on FirebaseAuthException catch (e) {
+        Navigator.pop(context); // Close the loading dialog
+
+        if (e.code == 'user-not-found') {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'error',
+            desc: 'Email address not found.',
+          ).show();
+        } else {
+          print(e); // Handle other errors
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Error'),
+              content: Text('An error occurred. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
+  }
+
   String? emailValidation(String input) {
     if (input.isEmpty) {
       return "emailCantBeEmpty";
