@@ -14,11 +14,13 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController nameController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+  TextEditingController genderController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController passwordConfirmationController =
-      TextEditingController();
+  TextEditingController passwordConfirmationController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
 
 
@@ -47,17 +49,61 @@ class _RegisterState extends State<Register> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      CustomTextFormField(
-                        label: "Name",
-                        controller: nameController,
-                        inputType: TextInputType.name,
-                        icon: EvaIcons.person,
-                        validator: nameValidation,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomTextFormField(
+                              label: "First name",
+                              controller: firstNameController,
+                              inputType: TextInputType.name,
+                              icon: EvaIcons.person,
+                              validator: nameValidation,
+                            ),
+                          ),
+
+                          SizedBox(width: 10.0),
+                          Expanded(
+                            child: CustomTextFormField(
+                              label: "last name",
+                              controller: lastNameController,
+                              inputType: TextInputType.name,
+                              icon: EvaIcons.person,
+                              validator: nameValidation,
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(
                         height: size.height * 0.025,
                       ),
 
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomTextFormField(
+                              label: "Age",
+                              controller: ageController,
+                              inputType: TextInputType.number,
+                              icon: Icons.cake_outlined,
+                              validator: nameValidation,
+                            ),
+                          ),
+
+                          SizedBox(width: 10.0),
+                          Expanded(
+                            child: CustomTextFormField(
+                              label: "gender",
+                              controller: genderController,
+                              inputType: TextInputType.text,
+                              icon: Icons.people_alt_outlined,
+                              validator: nameValidation,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: size.height * 0.025,
+                      ),
                       CustomTextFormField(
                         label: "Email",
                         controller: emailController,
@@ -75,6 +121,11 @@ class _RegisterState extends State<Register> {
                         icon: EvaIcons.phone,
                         validator: phoneValidation,
                       ),
+
+
+
+
+
                       SizedBox(
                         height: size.height * 0.025,
                       ),
@@ -117,7 +168,7 @@ class _RegisterState extends State<Register> {
                                     color: Colors.white)),
                           ),
                           onPressed: () {
-                            AuthenticationServices().register(context , nameController.text , emailController.text,phoneController.text,passwordController.text,passwordConfirmationController.text);
+                            AuthenticationServices().register(context , firstNameController.text , lastNameController.text , ageController.text,genderController.text, emailController.text , phoneController.text , passwordController.text , passwordConfirmationController.text );
                           },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
