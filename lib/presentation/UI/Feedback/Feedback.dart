@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rickman/presentation/UI/Widgets/CustomLongTextFormField.dart';
@@ -10,6 +12,40 @@ class FeedbackPage extends StatefulWidget {
 }
 
 class _FeedbackState extends State<FeedbackPage> {
+  final TextEditingController _feedbackController = TextEditingController();
+  double _rating = 0;
+
+  Future<void> _sendFeedback(double _rating, String feedback) async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    if (currentUser != null) {
+      final userName = currentUser.displayName;
+      try {
+        // Add feedback to Firestore
+        await FirebaseFirestore.instance.collection('feedback').add({
+          'userName': userName, // Add userId to the document
+          'rating': _rating,
+          'feedback': feedback,
+          'timestamp': DateTime.now(),
+        });
+
+        // Show success message or navigate to another screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Feedback submitted successfully'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } catch (error) {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to submit feedback'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +80,7 @@ class _FeedbackState extends State<FeedbackPage> {
                 ),
                 Center(
                   child: RatingBar.builder(
-                    // initialRating: viewModel!.rating,
+                    initialRating: 0,
                     minRating: 0,
                     direction: Axis.horizontal,
                     allowHalfRating: true,
@@ -58,7 +94,9 @@ class _FeedbackState extends State<FeedbackPage> {
                       color: Colors.amber,
                     ),
                     onRatingUpdate: (rating) {
-                      // viewModel!.changeRating(rating);
+                      setState(() {
+                        _rating = rating;
+                      });
                     },
                   ),
                 ),
@@ -68,6 +106,7 @@ class _FeedbackState extends State<FeedbackPage> {
                 CustomLongTextFormField(
                   label: "Your Feedback",
                   inputType: TextInputType.text,
+                  controller: _feedbackController,
                 ),
                 const SizedBox(
                   height: 30,
@@ -89,7 +128,14 @@ class _FeedbackState extends State<FeedbackPage> {
                             fontSize: 20,
                             color: Colors.white)),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        // Call function to send feedback to Firestore
+                        _sendFeedback(
+                          // Pass the rating and feedback from the UI
+                          _rating, // Replace with actual rating
+                          _feedbackController.text, // Feedback text
+                        );
+                      },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
