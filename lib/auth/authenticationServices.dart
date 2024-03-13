@@ -29,79 +29,6 @@ class AuthenticationServices{
     }
   }
 
-  // FOR Check if account exist and login and go to home page
-  // Future<void> loginUser(BuildContext context , String email , String password) async {
-  //   if(email == "" && password == ""){
-  //     AwesomeDialog(
-  //       context: context,
-  //       dialogType: DialogType.error,
-  //       animType: AnimType.rightSlide,
-  //       title: 'error',
-  //       desc: 'Write Your info please',
-  //     ).show();
-  //     return;
-  //   }
-  //   if(email == ""){
-  //     AwesomeDialog(
-  //       context: context,
-  //       dialogType: DialogType.error,
-  //       animType: AnimType.rightSlide,
-  //       title: 'error',
-  //       desc: 'Write the email please',
-  //     ).show();
-  //     return;
-  //   }
-  //   if(password == ""){
-  //     AwesomeDialog(
-  //       context: context,
-  //       dialogType: DialogType.error,
-  //       animType: AnimType.rightSlide,
-  //       title: 'error',
-  //       desc: 'Write the password please',
-  //     ).show();
-  //     return;
-  //   }
-  //   // Check if user with given email and password exists in Firestore
-  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .where('email', isEqualTo: email)
-  //       .where('password', isEqualTo: password)
-  //       .get();
-  //
-  //   if (querySnapshot.docs.isNotEmpty) {
-  //     // User found, login successful
-  //     print("Login successful for email: $email");
-  //
-  //     // Access user data from the first document in the query result
-  //     print("User data from Firestore: ${querySnapshot.docs.first.data()}");
-  //
-  //     // Navigate to the home page
-  //     Navigator.of(context).push(
-  //       MaterialPageRoute(builder: (context) => Home()),
-  //     );
-  //     AwesomeDialog(
-  //       context: context,
-  //       dialogType: DialogType.success,
-  //       animType: AnimType.rightSlide,
-  //       title: 'success',
-  //       desc: 'Login correct',
-  //     ).show();
-  //
-  //   } else {
-  //     // User not found, login failed
-  //     print("Login failed. User not found for email: $email");
-  //
-  //     // Show error message on the screen
-  //     AwesomeDialog(
-  //       context: context,
-  //       dialogType: DialogType.error,
-  //       animType: AnimType.rightSlide,
-  //       title: 'Error',
-  //       desc: 'Invalid Email or Password',
-  //     ).show();
-  //   }
-  // }
-
   Future<User?> signInWithEmailAndPassword(String email, String password) async{
     try{
       UserCredential credential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
@@ -208,13 +135,22 @@ class AuthenticationServices{
 
 
   // FOR Create Account
-  Future<void> register(BuildContext context , String name , String email , String phone, String password , String confirmPassword ) async {
+  Future<void> register(BuildContext context , String firstName , String lastName, String age,String gender, String email , String phone, String password , String confirmPassword ) async {
     try {
-      if(name == "" && email == "" && phone == "" && password == "" && confirmPassword == ""){
+      if(firstName == "" && lastName == "" && age == "" && gender == "" && email == "" && phone == "" && password == "" && confirmPassword == ""){
         throw ('please enter your info first');
       }
-      if(name == ""){
-        throw ('Write the name please');
+      if(firstName == ""){
+        throw ('Write your first name please');
+      }
+      if(lastName == ""){
+        throw ('Write your last name please');
+      }
+      if(age == ""){
+        throw ('Write your age please');
+      }
+      if(gender == ""){
+        throw ('Write your gender please');
       }
       if(email == ""){
         throw ('Write the email please');
@@ -238,7 +174,7 @@ class AuthenticationServices{
         email: email,
         password: password,
       );
-      await userCredential.user!.updateDisplayName(name);
+      await userCredential.user!.updateDisplayName(firstName);
 
       // await userCredential.user!.updatePhoneNumber(phone);
 
@@ -248,7 +184,10 @@ class AuthenticationServices{
           .doc(userCredential.user!.uid)
           .set({
         'email': email,
-        'userName': name,
+        'First Name': firstName,
+        'last Name': lastName,
+        'Age': age,
+        'gender': gender,
         "password":password,
         "phone": phone,
       });
@@ -271,6 +210,39 @@ class AuthenticationServices{
         desc: "Registration failed: $e",
       ).show();
     }
+  }
+
+
+  Future changePassword(BuildContext context , String newPassword) async{
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userDocRef = FirebaseFirestore.instance.collection('users').doc(currentUser!.uid);
+
+    try{
+      await currentUser.updatePassword(newPassword);
+
+      await userDocRef.update({
+        'password': newPassword, // Update a timestamp or another field indicating password update
+      });
+      FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.rightSlide,
+        title: 'success',
+        desc: "password has been changed.. Login again please",
+      ).show();
+
+    }catch(e){
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'error',
+        desc: "$e",
+      ).show();
+    }
+
   }
 
 }
