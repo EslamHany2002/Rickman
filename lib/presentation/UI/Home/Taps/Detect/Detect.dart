@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -5,14 +6,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rickman/presentation/UI/Result/result.dart';
+import 'package:http/http.dart' as http;
 
+import '../../../../test.dart';
 class Detect extends StatefulWidget {
   @override
   State<Detect> createState() => _DetectState();
 }
 
 class _DetectState extends State<Detect> {
-
+  //
+  // upload()async{
+  //   final request = http.MultipartRequest("POST" , "");
+  // }
   final List<String> genderItems = [
     'None',
     'Edge',
@@ -41,9 +47,35 @@ class _DetectState extends State<Detect> {
     }
     return Colors.white;
   }
+  File? _image;
+  // File? _selectedImage;
+  String? _predictedClass;
 
-  File? _selectedImage;
 
+  Future getImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _image = File(image!.path);
+    });
+  }
+
+  Future sendImage() async {
+    final url = 'http://10.0.2.2:5000/predict';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    var pic = await http.MultipartFile.fromPath("file", _image!.path);
+    request.files.add(pic);
+
+    var response = await request.send();
+    var responseBody = await response.stream.bytesToString();
+
+    var prediction = jsonDecode(responseBody);
+    print(responseBody);
+    // Text(responseBody);
+    setState(() {
+      _predictedClass = prediction['class_name'];
+    });
+  }
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -58,14 +90,12 @@ class _DetectState extends State<Detect> {
               const SizedBox(
                 height: 30,
               ),
-              Text("Tap Here To Pick Your MRI Image"),
+              // Text("Tap Here To Pick Your MRI Image"),
               const SizedBox(
                 height: 20,
               ),
               InkWell(
-                onTap: () {
-                  _showButtonSheet();
-                },
+                onTap:getImage,
                 child: Container(
                   width: 400,
                   height: 309,
@@ -73,12 +103,12 @@ class _DetectState extends State<Detect> {
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: _selectedImage != null
+                  child: _image != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(
                               MediaQuery.of(context).size.height * .02),
                           child: Image.file(
-                            _selectedImage!,
+                            _image!,
                             width: double.infinity,
                             fit: BoxFit.cover,
                           ))
@@ -117,63 +147,63 @@ class _DetectState extends State<Detect> {
               SizedBox(
                 height: 25,
               ),
-              DropdownButtonFormField2<String>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  // Add Horizontal padding using menuItemStyleData.padding so it matches
-                  // the menu padding when button's width is not specified.
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  // Add more decoration..
-                ),
-                hint: const Text(
-                  'Choose your filter',
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
-                items: genderItems
-                    .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ))
-                    .toList(),
-                validator: (value) {
-                  if (value == null) {
-                    return 'Choose your filter';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  //Do something when selected item is changed.
-                },
-                onSaved: (value) {
-                  selectedValue = value.toString();
-                },
-                buttonStyleData: const ButtonStyleData(
-                  padding: EdgeInsets.only(right: 8),
-                ),
-                iconStyleData: const IconStyleData(
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.black,
-                  ),
-                  iconSize: 24,
-                ),
-                dropdownStyleData: DropdownStyleData(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-              ),
+              // DropdownButtonFormField2<String>(
+              //   isExpanded: true,
+              //   decoration: InputDecoration(
+              //     // Add Horizontal padding using menuItemStyleData.padding so it matches
+              //     // the menu padding when button's width is not specified.
+              //     contentPadding: const EdgeInsets.symmetric(vertical: 16),
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(15),
+              //     ),
+              //     // Add more decoration..
+              //   ),
+              //   hint: const Text(
+              //     'Choose your filter',
+              //     style: TextStyle(fontSize: 16, color: Colors.black),
+              //   ),
+              //   items: genderItems
+              //       .map((item) => DropdownMenuItem<String>(
+              //             value: item,
+              //             child: Text(
+              //               item,
+              //               style: const TextStyle(
+              //                 fontSize: 14,
+              //               ),
+              //             ),
+              //           ))
+              //       .toList(),
+              //   validator: (value) {
+              //     if (value == null) {
+              //       return 'Choose your filter';
+              //     }
+              //     return null;
+              //   },
+              //   onChanged: (value) {
+              //     //Do something when selected item is changed.
+              //   },
+              //   onSaved: (value) {
+              //     selectedValue = value.toString();
+              //   },
+              //   buttonStyleData: const ButtonStyleData(
+              //     padding: EdgeInsets.only(right: 8),
+              //   ),
+              //   iconStyleData: const IconStyleData(
+              //     icon: Icon(
+              //       Icons.arrow_drop_down,
+              //       color: Colors.black,
+              //     ),
+              //     iconSize: 24,
+              //   ),
+              //   dropdownStyleData: DropdownStyleData(
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(15),
+              //     ),
+              //   ),
+              //   menuItemStyleData: const MenuItemStyleData(
+              //     padding: EdgeInsets.symmetric(horizontal: 16),
+              //   ),
+              // ),
               SizedBox(
                 height: 25,
               ),
@@ -190,7 +220,9 @@ class _DetectState extends State<Detect> {
                       fontSize: 20,
                       color: Colors.white)),
                 ),
-                onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (_) => Result()));},
+                onPressed:
+                sendImage,
+                    // () {Navigator.push(context, MaterialPageRoute(builder: (_) => BrainTumorDetector()));},
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
@@ -207,39 +239,46 @@ class _DetectState extends State<Detect> {
               SizedBox(
                 height: 15,
               ),
-              Row(
-                children: [
-                  Checkbox(
-                    checkColor: Colors.black,
-                    fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: isChecked,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isChecked = value!;
-                      });
-                    },
-                  ),
-                  // SizedBox(width: 15,),
-                  Column(
-                    children: [
-                      Container(
-                        width: size.width*0.690,
-                        child: Text(
-                          "You agree that we are not responsible",
-                        ),
-                      ),
-                      Container(
-                        width: size.width*0.690,
-                        child: Text(
-                          "for considering these results ",
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              SizedBox(height: 20),
+              Row(children: [
+                Text("Predicted class :",style: TextStyle(fontSize: 22.5,fontWeight: FontWeight.bold),)
+              ],),
+              _predictedClass != null
+                  ? Text('$_predictedClass',style: TextStyle(fontSize: 18),)
+                  : Container(),
+              // Row(
+              //   children: [
+              //     Checkbox(
+              //       checkColor: Colors.black,
+              //       fillColor: MaterialStateProperty.resolveWith(getColor),
+              //       value: isChecked,
+              //       onChanged: (bool? value) {
+              //         setState(() {
+              //           isChecked = value!;
+              //         });
+              //       },
+              //     ),
+              //     // SizedBox(width: 15,),
+              //     Column(
+              //       children: [
+              //         Container(
+              //           width: size.width*0.690,
+              //           child: Text(
+              //             "You agree that we are not responsible",
+              //           ),
+              //         ),
+              //         Container(
+              //           width: size.width*0.690,
+              //           child: Text(
+              //             "for considering these results ",
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ],
+              // ),
               SizedBox(
-                height: 20,
+                height: 50,
               ),
               Text(
                 "Please note that this program is intended to aid in the monitoring of brain tumors. The results should not be construed as definitive or final diagnosis without further medical consultation.",
@@ -351,7 +390,7 @@ class _DetectState extends State<Detect> {
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
-      _selectedImage = File(returnedImage!.path);
+      _image = File(returnedImage!.path);
     });
   }
 }
