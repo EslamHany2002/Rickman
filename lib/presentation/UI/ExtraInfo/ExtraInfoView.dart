@@ -187,12 +187,12 @@ class _ExtraInfoViewState extends State<ExtraInfoView> {
                     height: 20,
                   ),
                   // bio text field
-                  CustomLongTextFormField(
-                    label: "bio",
-                    // controller: viewModel!.bioController,
-                    inputType: TextInputType.text,
-                    // validator: viewModel!.bioValidation
-                  ),
+                  // CustomLongTextFormField(
+                  //   label: "bio",
+                  //   controller: viewModel!.bioController,
+                  //   inputType: TextInputType.text,
+                  //   // validator: viewModel!.bioValidation
+                  // ),
                   const SizedBox(
                     height: 30,
                   ),
