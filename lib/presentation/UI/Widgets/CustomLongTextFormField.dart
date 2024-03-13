@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 class CustomLongTextFormField extends StatelessWidget {
   String label;
-  // TextEditingController controller;
+  TextEditingController controller;
   TextInputType inputType;
   // Function validator;
   CustomLongTextFormField(
       {required this.label,
-        // required this.controller,
+        required this.controller,
         required this.inputType,
         // required this.validator,
       });
@@ -17,7 +17,7 @@ class CustomLongTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     // var textTheme = Theme.of(context).textTheme;
     return TextFormField(
-      // controller: controller,
+      controller: controller,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       // style: textTheme.displayMedium,
       cursorColor: Colors.black,
