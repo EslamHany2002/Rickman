@@ -1,24 +1,77 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
-import 'package:icons_plus/icons_plus.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:rickman/presentation/UI/Home/Taps/Profile/Profile.dart';
-import '../Widgets/CustomTextFormField.dart';
+import '../change password/chagePassword.dart';
 
-class EditProfile extends StatefulWidget {
-  const EditProfile({super.key});
-
+class UpdateProfileScreen extends StatefulWidget {
   @override
-  State<EditProfile> createState() => _EditProfileState();
+  _UpdateProfileScreenState createState() => _UpdateProfileScreenState();
 }
 
-class _EditProfileState extends State<EditProfile> {
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  final _dateProvider = TextEditingController();
+class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   File? _selectedImage;
+  User? user = FirebaseAuth.instance.currentUser;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Load user data when the screen initializes
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    // Get current user's data from Firestore
+
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid) // Replace 'currentUserId' with your actual user ID
+        .get();
+
+    // Update the text controllers with the user's data
+    setState(() {
+      nameController.text = userSnapshot['First Name'] ?? '';
+      phoneController.text = userSnapshot['phone'] ?? '';
+      ageController.text = userSnapshot['Age'] ?? '';
+      emailController.text = userSnapshot['email'] ?? '';
+    });
+  }
+
+  Future<void> updateUser() async {
+    // String userId = user?.uid; // Replace 'currentUserId' with your actual user ID
+
+    // Update user data in Firestore
+    await FirebaseFirestore.instance.collection('users').doc(user?.uid).update({
+      'First Name': nameController.text,
+      'phone': phoneController.text,
+      'Age': ageController.text,
+      'email': emailController.text,
+    });
+
+    // Show a confirmation message to the user
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Profile Updated'),
+          content: Text('Your profile has been updated successfully.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,260 +81,316 @@ class _EditProfileState extends State<EditProfile> {
         elevation: 0.0,
       ),
       body: SingleChildScrollView(
-          child: Column(
-        children: [
-          const SizedBox(
-            height: 5,
-          ),
-          //Image Picker
-          InkWell(
-            onTap: () {_showButtonSheet();},
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 5,
+            ),
+            //Image Picker
+            InkWell(
+              onTap: () {
+                _showButtonSheet();
+              },
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  ),
-              child: _selectedImage != null
-                  ? ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                      MediaQuery.of(context).size.height * .02),
-                  child: Image.file(
-                    _selectedImage!,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ))
-                  :Column(
-                children: [
-                  Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.154),
-                            blurRadius: 20,
-                            offset: const Offset(0, 4),
-                          )
-                        ]
+                ),
+                child: _selectedImage != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                            MediaQuery.of(context).size.height * .02),
+                        child: Image.file(
+                          _selectedImage!,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ))
+                    : Column(
+                        children: [
+                          Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.154),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 4),
+                                  )
+                                ]),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  "Assets/Images/Virtecal_Brain_Cancer_Logo.jpg",
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          "Assets/Images/Virtecal_Brain_Cancer_Logo.jpg",
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ),
-          ),
-          // form
-          Form(
+            Form(
               child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                SizedBox(height: 20,),
-                CustomTextFormField(
-                    label: "name",
-                    controller: nameController,
-                    inputType: TextInputType.name,
-                    validator: nameValidation,
-                    icon: EvaIcons.person),
-                const SizedBox(
-                  height: 20,
-                ),
-                CustomTextFormField(
-                    label: "phone",
-                    controller: phoneController,
-                    inputType: TextInputType.phone,
-                    validator: phoneValidation,
-                    icon: EvaIcons.phone),
-                const SizedBox(
-                  height: 20,
-                ),
-                // date piker button
-                TextFormField(
-                  onTap: () {
-                    showCustomDatePicker();
-                  },
-                  readOnly: true,
-                  controller: _dateProvider,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  cursorColor: Colors.black,
-                  // keyboardType: inputType,
-                  // validator: (value) => validator(value),
-                  cursorHeight: 20,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(20),
-                    hintText: "Selected Date",
-                    // filled: true,
-                    prefixIcon: const Icon(
-                      Bootstrap.calendar_date_fill,
-                      color: Colors.black,
-                      size: 30,
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          width: 2,
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        label: Text(
+                          "Name",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.person,
                           color: Colors.black,
-                        )),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: const BorderSide(
-                        width: 2,
-                        color: Colors.black,
+                          size: 30,
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            width: 2,
+                            color: Colors.black,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          width: 2,
-                          color: Colors.black,
-                        )),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          width: 2,
-                          color: Colors.red,
-                        )),
-                    focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          width: 2,
-                          color: Colors.red,
-                        )),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                // CustomLongTextFormField(
-                //   label: "bio",
-                //   // controller: value.bioController,
-                //   inputType: TextInputType.text,
-                //   // validator: value.bioValidation,
-                // ),
-                const SizedBox(
-                  height: 75,
-                ),
-                TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "changePassword",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.black, decoration: TextDecoration.underline),
-                    )),
-                const SizedBox(
-                  height: 5,
-                ),
-                // confirm button
-                ElevatedButton(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(Colors.black),
-                      backgroundColor: MaterialStateProperty.all(Colors.black),
-                      elevation: MaterialStateProperty.all(0),
-                      shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      )),
-                      textStyle: MaterialStateProperty.all(const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
+                    const SizedBox(
+                      height: 20,
                     ),
-                    onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Profile()));},
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text("Update Account" ,style:  TextStyle(color: Colors.white , fontSize: 25),),
+                    TextFormField(
+                      controller: phoneController,
+                      decoration: InputDecoration(
+                        label: Text(
+                          "Phone",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
                         ),
-                      ],
-                    )
+                        prefixIcon: Icon(
+                          Icons.phone,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            width: 2,
+                            color: Colors.black,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      controller: ageController,
+                      decoration: InputDecoration(
+                        label: Text(
+                          "Age",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.cake_rounded,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            width: 2,
+                            color: Colors.black,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        label: Text(
+                          "Email",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            width: 2,
+                            color: Colors.black,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black,
+                            )),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.red,
+                            )),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ))
-        ],
-      )),
-    );
-  }
 
-  showCustomDatePicker() async {
-    DateTime? newDateTime = await showRoundedDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(DateTime.now().year - 100),
-      lastDate: DateTime(DateTime.now().year + 1),
-      borderRadius: 16,
-      height: 300,
-      barrierDismissible: false,
-      styleDatePicker: MaterialRoundedDatePickerStyle(
-        backgroundActionBar: Colors.white,
-        backgroundHeader: Colors.black,
-        colorArrowNext: Colors.black,
-        colorArrowPrevious: Colors.black,
-        textStyleButtonAction: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
+            const SizedBox(
+              height: 25,
+            ),
+            TextButton(
+                onPressed: () {      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChagePassword()));
+                },
+                child: const Text(
+                  "changePassword",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      decoration: TextDecoration.underline),
+                )),
+            const SizedBox(
+              height: 5,
+            ),
+            ElevatedButton(
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all(Colors.black),
+                  backgroundColor: MaterialStateProperty.all(Colors.black),
+                  elevation: MaterialStateProperty.all(0),
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  )),
+                  textStyle: MaterialStateProperty.all(const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white)),
+                ),
+                onPressed: updateUser,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        "Update Account",
+                        style: TextStyle(color: Colors.white, fontSize: 25),
+                      ),
+                    ),
+                  ],
+                )),
+          ],
         ),
-        textStyleMonthYearHeader: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        textStyleDayOnCalendarSelected: const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-        ),
-        textStyleDayOnCalendarDisabled: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        textStyleYearButton: const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-        ),
-        textStyleDayOnCalendar: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        textStyleDayHeader: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        textStyleDayButton: const TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        textStyleCurrentDayOnCalendar: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        textStyleButtonPositive: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        textStyleButtonNegative: const TextStyle(
-          fontSize: 16,
-          color: Colors.black,
-        ),
-        backgroundHeaderMonth: Colors.white,
-        backgroundPicker: Colors.white,
-        decorationDateSelected: BoxDecoration(
-            borderRadius: BorderRadius.circular(10), color: Colors.black),
       ),
     );
-    if (newDateTime != null) {
-      setState(() {
-        _dateProvider.text = DateFormat.yMd().format(newDateTime);
-      });
-    }
   }
 
   String? nameValidation(String name) {
@@ -298,8 +407,7 @@ class _EditProfileState extends State<EditProfile> {
   String? phoneValidation(String value) {
     if (value.isEmpty) {
       return "enterPhoneNumber";
-    }
-    else if (!RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)').hasMatch(value)) {
+    } else if (!RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)').hasMatch(value)) {
       return "enterValidMobileNumber";
     }
     return null;
@@ -330,9 +438,9 @@ class _EditProfileState extends State<EditProfile> {
                   ElevatedButton(
                       style: ButtonStyle(
                         foregroundColor:
-                        MaterialStateProperty.all(Colors.black),
+                            MaterialStateProperty.all(Colors.black),
                         backgroundColor:
-                        MaterialStateProperty.all(Colors.black),
+                            MaterialStateProperty.all(Colors.black),
                         elevation: MaterialStateProperty.all(0),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -353,7 +461,7 @@ class _EditProfileState extends State<EditProfile> {
                             child: Text(
                               "Gallery",
                               style:
-                              TextStyle(color: Colors.white, fontSize: 23),
+                                  TextStyle(color: Colors.white, fontSize: 23),
                             ),
                           ),
                         ],
@@ -361,9 +469,9 @@ class _EditProfileState extends State<EditProfile> {
                   ElevatedButton(
                       style: ButtonStyle(
                         foregroundColor:
-                        MaterialStateProperty.all(Colors.black),
+                            MaterialStateProperty.all(Colors.black),
                         backgroundColor:
-                        MaterialStateProperty.all(Colors.black),
+                            MaterialStateProperty.all(Colors.black),
                         elevation: MaterialStateProperty.all(0),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -386,7 +494,7 @@ class _EditProfileState extends State<EditProfile> {
                             child: Text(
                               "camera",
                               style:
-                              TextStyle(color: Colors.white, fontSize: 23),
+                                  TextStyle(color: Colors.white, fontSize: 23),
                             ),
                           ),
                         ],
@@ -400,7 +508,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future _PickImageFromGallery() async {
     final returnedImage =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
       _selectedImage = File(returnedImage!.path);
@@ -409,7 +517,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future _PickImageFromCamera() async {
     final returnedImage =
-    await ImagePicker().pickImage(source: ImageSource.camera);
+        await ImagePicker().pickImage(source: ImageSource.camera);
 
     setState(() {
       _selectedImage = File(returnedImage!.path);
