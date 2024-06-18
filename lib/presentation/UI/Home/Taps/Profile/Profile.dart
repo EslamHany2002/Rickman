@@ -1,13 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:rickman/auth/authenticationServices.dart';
 import 'package:rickman/presentation/UI/About%20us/AboutUs.dart';
 import 'package:rickman/presentation/UI/Edit%20Profile/EditProfile.dart';
 import 'package:rickman/presentation/UI/Feedback/Feedback.dart';
 import 'package:rickman/presentation/UI/Login/Login.dart';
-import 'package:rickman/presentation/UI/Widgets/Theme%20Switch.dart';
 import 'Widgets/CustomButton.dart';
 
 class Profile extends StatefulWidget {
@@ -16,71 +15,101 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
-  String name = '';
+  User? currentUser;
+  String fname = '';
+  String lname = '';
   String email = '';
-  String age = '';
-  String gender = '';
-  String phone = '';
+  String profileImageUrl = '';
 
   @override
   void initState() {
     super.initState();
-    getUserInfo();
+    currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      _loadUserProfile();
+    }
   }
 
-  Future<void> getUserInfo() async {
-    final currentUser = FirebaseAuth.instance.currentUser!;
-    if (currentUser != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+  Future<void> _loadUserProfile() async {
+    final email = currentUser?.email;
+    if (email != null) {
+      final docSnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(currentUser.uid)
+          .doc(email)
           .get();
-      setState(() {
-        name = userDoc['First Name'];
-        email = userDoc['email'];
-        age = userDoc['Age'];
-        gender = userDoc['gender'];
-        phone = userDoc['phone'];
-      });
+
+      if (docSnapshot.exists) {
+        final userData = docSnapshot.data();
+        if (userData != null) {
+          setState(() {
+            fname = userData['first_name'] ?? '';
+            lname = userData['last_name'] ?? '';
+            this.email = userData['email'] ?? '';
+            profileImageUrl = userData['profile_picture'] ?? ''; // Fetch the profile image URL from Firestore
+          });
+        }
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 30),
-            child: Container(
-              height: 190,
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                  // color: Colors.black54,
-                  borderRadius: BorderRadius.only(
-                bottomLeft: const Radius.circular(80),
-                bottomRight: const Radius.circular(0),
-              )),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(width: MediaQuery.of(context).size.width*0.28,),
-                  // user image
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 140,
-                        height: 140,
+      body: currentUser != null
+          ? FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser!.email)
+            .get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return Center(child: Text('No data found'));
+          }
+
+          Map<String, dynamic>? userData =
+          snapshot.data!.data() as Map<String, dynamic>?;
+
+          if (userData != null) {
+            fname = userData['first_name'] ?? '';
+            lname = userData['last_name'] ?? '';
+            email = userData['email'] ?? '';
+            profileImageUrl = userData['profile_picture'] ?? ''; // Fetch the profile image URL from Firestore
+          }
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.05),
+                    child: Container(
+                      height: screenHeight * 0.3,
+                      padding: const EdgeInsets.all(25),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(screenWidth * 0.4),
+                          bottomRight: Radius.circular(0),
+                        ),
+                      ),
+                      child: Container(
+                        width: screenWidth * 0.5,
+                        height: screenWidth * 0.5,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.only(
-                            bottomRight: const Radius.circular(80),
-                            bottomLeft: const Radius.circular(80),
-                            topLeft: const Radius.circular(15),
-                            topRight: const Radius.circular(80),
+                            bottomRight: Radius.circular(screenWidth * 0.4),
+                            bottomLeft: Radius.circular(screenWidth * 0.4),
+                            topLeft: Radius.circular(screenWidth * 0.05),
+                            topRight: Radius.circular(screenWidth * 0.05),
                           ),
                           boxShadow: [
                             BoxShadow(
@@ -92,160 +121,96 @@ class _ProfileState extends State<Profile> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.only(
-                            bottomRight: const Radius.circular(80),
-                            bottomLeft: const Radius.circular(80),
-                            topLeft: const Radius.circular(15),
-                            topRight: const Radius.circular(15),
+                            bottomRight: Radius.circular(screenWidth * 0.4),
+                            bottomLeft: Radius.circular(screenWidth * 0.4),
+                            topLeft: Radius.circular(screenWidth * 0.05),
+                            topRight: Radius.circular(screenWidth * 0.05),
                           ),
-                          child: Image.asset(
-                            "Assets/Images/me.jpg",
+                          child: profileImageUrl.isNotEmpty
+                              ? Image.network(
+                            profileImageUrl,
+                            fit: BoxFit.cover,
+                          )
+                              : Image.asset(
+                            "Assets/Images/profile pic.jpg",
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                  const SizedBox(
-                    width: 20,
+                ),
+                Center(
+                  child: Text(
+                    "$fname ",
+                    style: TextStyle(
+                        fontSize: screenWidth * 0.06,
+                        fontWeight: FontWeight.bold),
                   ),
-                  // user name , email and edit profile button
-                  // Column(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     Spacer(),
-                  //
-                  //     Text(
-                  //       name,
-                  //       style: TextStyle(
-                  //         // color: Colors.white,
-                  //         fontSize: 24,
-                  //         fontWeight: FontWeight.bold,
-                  //       ),
-                  //     ),
-                  //     // Spacer(),
-                  //     Text(
-                  //       email,
-                  //     ),
-                  //     Spacer(),
-                  //   ],
-                  // )
-                ],
-              ),
+                ),
+                Center(
+                  child: Text(
+                    "$email",
+                    style: TextStyle(
+                        fontSize: screenWidth * 0.04,
+                        color: Colors.black54),
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.05),
+                CustomButton(
+                  title: "Edit",
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => UpdateProfileScreen()),
+                    );
+                  },
+                  icon: EvaIcons.edit_2_outline,
+                ),
+                SizedBox(height: screenHeight * 0.02),
+                CustomButton(
+                  title: "Feedback",
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const FeedbackPage()),
+                    );
+                  },
+                  icon: EvaIcons.smiling_face_outline,
+                ),
+                SizedBox(height: screenHeight * 0.02),
+                CustomButton(
+                  title: "AboutUs",
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AboutUs()),
+                    );
+                  },
+                  icon: Bootstrap.info_circle,
+                ),
+                SizedBox(height: screenHeight * 0.02),
+                CustomButton(
+                  title: "SignOut",
+                  action: () {
+                    AuthenticationServices().signOut(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => Login()),
+                    );
+                  },
+                  icon: Bootstrap.box_arrow_in_right,
+                  color: Colors.red,
+                ),
+                SizedBox(height: screenHeight * 0.05),
+              ],
             ),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          Row(
-            children: [
-              SizedBox(
-                width: 25,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        "Name : $name",
-                        style: TextStyle(fontSize: 19),
-                      )),
-                  FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        "Email : $email",
-                        style: TextStyle(fontSize: 19),
-                      )),
-                  FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        "Phone : $phone",
-                        style: TextStyle(fontSize: 19),
-                      )),
-                  FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        "Age : $age",
-                        style: TextStyle(fontSize: 19),
-                      )),
-                  FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        "Gender : $gender",
-                        style: TextStyle(fontSize: 19),
-                      )),
-                ],
-              ),
-            ],
-          ),
-
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       Padding(
-          //         padding: const EdgeInsets.all(2.0),
-          //         child: Text(
-          //           "Theme",
-          //           style:
-          //               TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-          //         ),
-          //       ),
-          //       ThemeSwitch(),
-          //     ],
-          //   ),
-          // ),
-          SizedBox(
-            height: 15,
-          ),
-          CustomButton(
-            title: "Edit",
-            action: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => UpdateProfileScreen()));
-            },
-            icon: EvaIcons.edit_2_outline,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          CustomButton(
-            title: "Feedback",
-            action: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const FeedbackPage()));
-            },
-            icon: EvaIcons.smiling_face_outline,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          CustomButton(
-            title: "AboutUs",
-            action: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const AboutUs()));
-            },
-            icon: Bootstrap.info_circle,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          CustomButton(
-            title: "SignOut",
-            action: () {
-              AuthenticationServices().signOut(context);
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => Login()));
-            },
-            icon: Bootstrap.box_arrow_in_right,
-            color: Colors.red,
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-        ],
+          );
+        },
+      )
+          : Center(
+        child: Text('User not logged in'),
       ),
     );
   }
