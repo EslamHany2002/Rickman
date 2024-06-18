@@ -5,17 +5,38 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rickman/presentation/UI/Home/HomePage.dart';
 import 'package:rickman/presentation/UI/Login/Login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationServices{
 
+  void _showErrorDialog(BuildContext context, String message) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.rightSlide,
+      title: 'Error',
+      desc: message,
+    ).show();
+  }
+
+  void _showSuccessDialog(BuildContext context, String message) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.rightSlide,
+      title: 'Success',
+      desc: message,
+    ).show();
+  }
   // FOR sign Out and go to Login page
   Future<void> signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', false);
       // Handle successful signout (e.g., navigate to login page)
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (_) => Login()));
+      //Navigator.pushReplacement(context,
+        //  MaterialPageRoute(builder: (_) => Login()));
 
     } catch (e) {
       // Handle errors (e.g., show error message)
@@ -34,66 +55,39 @@ class AuthenticationServices{
       UserCredential credential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       return credential.user;
     }catch(e){
-      print("Some error occured");
+      print("Some error occurred: $e");
+      return null;
     }
   }
 
-  void signIn(BuildContext context ,String email, String password) async {
+  Future<void> signIn(BuildContext context ,String email, String password) async {
     // String email = emailController.text;
     // String password = passwordController.text;
     User? user = await AuthenticationServices()
         .signInWithEmailAndPassword(email, password);
-    if(email == "" && password == ""){
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        animType: AnimType.rightSlide,
-        title: 'error',
-        desc: 'Write Your info please',
-      ).show();
+    if(email.isEmpty && password.isEmpty){
+      _showErrorDialog(context, 'Write Your info please');
       return;
     }
-    if(email == ""){
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        animType: AnimType.rightSlide,
-        title: 'error',
-        desc: 'Write the email please',
-      ).show();
+    if(email.isEmpty){
+      _showErrorDialog(context, 'Write the email please');
       return;
     }
-    if(password == ""){
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        animType: AnimType.rightSlide,
-        title: 'error',
-        desc: 'Write the password please',
-      ).show();
+    if(password.isEmpty){
+      _showErrorDialog(context, 'Write the password please');
       return;
     }
     if (user != null) {
-      print("User is successfully login");
-      Navigator.of(context).push(
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      print("User is successfully logged in");
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => Home()),
       );
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.success,
-        animType: AnimType.rightSlide,
-        title: 'success',
-        desc: 'successfully login',
-      ).show();
+      // _showSuccessDialog(context, 'Successfully logged in');
     } else {
       print("some error");
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        animType: AnimType.rightSlide,
-        title: 'error',
-        desc: 'Invalid Email or Password',
-      ).show();
+      _showErrorDialog(context, 'Invalid Email or Password');
     }
   }
 
@@ -123,7 +117,7 @@ class AuthenticationServices{
 
   Future<void> storeUserData(User? user) async {
     if (user != null) {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final docRef = FirebaseFirestore.instance.collection('users').doc(user.email);
       await docRef.set({
         'userName': user.displayName,
         'email': user.email,
@@ -181,12 +175,12 @@ class AuthenticationServices{
       // Store additional user data in Firestore
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(userCredential.user!.uid)
+          .doc(userCredential.user!.email)
           .set({
         'email': email,
-        'First Name': firstName,
-        'last Name': lastName,
-        'Age': age,
+        'first_name': firstName,
+        'last_name': lastName,
+        'age': age,
         'gender': gender,
         "password":password,
         "phone": phone,
