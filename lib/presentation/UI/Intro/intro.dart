@@ -4,6 +4,8 @@ import 'package:rickman/presentation/UI/Intro/Taps/Intro_Screen%202/Intro_Screen
 import 'package:rickman/presentation/UI/Intro/Taps/Intro_Screen%203/Intro_Screen%203.dart';
 import 'package:rickman/presentation/UI/Login/Login.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class Intro extends StatefulWidget {
   const Intro({super.key});
@@ -14,9 +16,9 @@ class Intro extends StatefulWidget {
 
 class _IntroState extends State<Intro> {
   PageController _controller = PageController();
-
   bool onLastPage = false;
   bool onFirstPage = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +57,9 @@ class _IntroState extends State<Intro> {
                     ? GestureDetector(onTap: () {}, child: const Text(""))
                     : GestureDetector(
                         onTap: () {
-                          _controller.previousPage(duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+                          _controller.previousPage(
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeIn);
                           // _controller.jumpToPage(2);
                         },
                         child: const Text(
@@ -68,8 +72,10 @@ class _IntroState extends State<Intro> {
                     effect: const ExpandingDotsEffect()),
                 onLastPage
                     ? GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async{
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('isFirstTime', false);
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) {
                               return Login();
