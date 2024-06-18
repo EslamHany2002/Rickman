@@ -130,12 +130,12 @@ class _AboutUsState extends State<AboutUs> {
               child: Row(
                 children: [
                   DeveloperCard(imagePath: "Assets/Images/me.jpg",name: "eslam hany",),
-                  DeveloperCard(imagePath: "Assets/Images/me.jpg",name: "abdelrhman reda",),
-                  DeveloperCard(imagePath: "Assets/Images/me.jpg",name: "abdelrhman salman",),
-                  DeveloperCard(imagePath: "Assets/Images/me.jpg",name: "Khaled Elgendy",),
-                  DeveloperCard(imagePath: "Assets/Images/me.jpg",name: "abdelrhman Askar",),
-                  DeveloperCard(imagePath: "Assets/Images/me.jpg",name: "mahmoud morsy",),
-                  DeveloperCard(imagePath: "Assets/Images/me.jpg",name: "omar Afify",),
+                  DeveloperCard(imagePath: "Assets/Images/reda.jpg",name: "abdelrhman reda",),
+                  DeveloperCard(imagePath: "Assets/Images/salman.jpg",name: "abdelrhman salman",),
+                  DeveloperCard(imagePath: "Assets/Images/khaled.jpg",name: "Khaled Elgendy",),
+                  DeveloperCard(imagePath: "Assets/Images/askar.jpg",name: "abdelrhman Askar",),
+                  DeveloperCard(imagePath: "Assets/Images/morsy.jpg",name: "mahmoud morsy",),
+                  DeveloperCard(imagePath: "Assets/Images/omar.jpg",name: "omar Afify",),
                 ],
               ),
             ),
