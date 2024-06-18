@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,32 +26,17 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     loadUserData();
   }
 
-  Future<void> loadUserData() async {
-    // Get current user's data from Firestore
-
-    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user?.uid) // Replace 'currentUserId' with your actual user ID
-        .get();
-
-    // Update the text controllers with the user's data
-    setState(() {
-      nameController.text = userSnapshot['First Name'] ?? '';
-      phoneController.text = userSnapshot['phone'] ?? '';
-      ageController.text = userSnapshot['Age'] ?? '';
-      emailController.text = userSnapshot['email'] ?? '';
-    });
-  }
-
   Future<void> updateUser() async {
-    // String userId = user?.uid; // Replace 'currentUserId' with your actual user ID
+    // Upload image to Firebase Storage and get download URL
+    String imageUrl = _selectedImage != null ? await _uploadImage() : await _getExistingProfilePicture();
 
     // Update user data in Firestore
-    await FirebaseFirestore.instance.collection('users').doc(user?.uid).update({
-      'First Name': nameController.text,
+    await FirebaseFirestore.instance.collection('users').doc(user?.email).update({
+      'first_name': nameController.text,
       'phone': phoneController.text,
-      'Age': ageController.text,
+      'age': ageController.text,
       'email': emailController.text,
+      'profile_picture': imageUrl,
     });
 
     // Show a confirmation message to the user
@@ -72,6 +58,105 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       },
     );
   }
+  Future<String> _uploadImage() async {
+    if (_selectedImage == null) return '';
+
+    try {
+      // Create a reference to the location you want to upload to in Firebase Storage
+      String emailSafe = user?.email?.replaceAll('.', '_') ?? 'unknown_user';
+      String imageName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference ref = FirebaseStorage.instance.ref().child('profile_images/$emailSafe/$imageName.jpg');
+
+      // Set the metadata with the content type as 'image/jpeg'
+      final metadata = SettableMetadata(contentType: 'image/jpeg');
+
+      // Upload the image with metadata
+      UploadTask uploadTask = ref.putFile(_selectedImage!, metadata);
+      TaskSnapshot storageTaskSnapshot = await uploadTask.whenComplete(() => null);
+      String imageUrl = await storageTaskSnapshot.ref.getDownloadURL();
+
+      // Return image URL
+      return imageUrl;
+    } catch (e) {
+      // Handle upload failure
+      throw Exception('Failed to upload image: $e');
+    }
+  }
+
+  Future<String> _getExistingProfilePicture() async {
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.email)
+        .get();
+    return userSnapshot['profile_picture'] ?? '';
+  }
+
+  // Future<String> uploadImageToStorage() async {
+  //   if (_selectedImage != null) {
+  //     // Create a reference to the location you want to upload to in firebase
+  //     final reference =
+  //     await FirebaseStorage.instance.ref().child('profile_pictures/${user!.uid}');
+  //
+  //     // Upload the file to firebase
+  //     UploadTask uploadTask = reference.putFile(_selectedImage!);
+  //
+  //     // Waits till the file is uploaded then stores the download url
+  //     TaskSnapshot storageTaskSnapshot = await uploadTask;
+  //     String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
+  //     return downloadUrl;
+  //   } else {
+  //     // If no image selected, return an empty string or a default image URL
+  //     return ''; // or return a default image URL
+  //   }
+  // }
+
+  Future<void> loadUserData() async {
+    // Get current user's data from Firestore
+
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.email) // Replace 'currentUserId' with your actual user ID
+        .get();
+
+    // Update the text controllers with the user's data
+    setState(() {
+      nameController.text = userSnapshot['first_name'] ?? '';
+      phoneController.text = userSnapshot['phone'] ?? '';
+      ageController.text = userSnapshot['age'] ?? '';
+      emailController.text = userSnapshot['email'] ?? '';
+    });
+  }
+
+  // Future<void> updateUser() async {
+  //   // String userId = user?.uid; // Replace 'currentUserId' with your actual user ID
+  //
+  //   // Update user data in Firestore
+  //   await FirebaseFirestore.instance.collection('users').doc(user?.uid).update({
+  //     'First Name': nameController.text,
+  //     'phone': phoneController.text,
+  //     'Age': ageController.text,
+  //     'email': emailController.text,
+  //   });
+  //
+  //   // Show a confirmation message to the user
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Profile Updated'),
+  //         content: Text('Your profile has been updated successfully.'),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +166,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         elevation: 0.0,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(left: 20,right: 20,bottom: 20),
         child: Column(
           children: [
             const SizedBox(
