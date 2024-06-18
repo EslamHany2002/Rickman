@@ -22,7 +22,8 @@ class _RegisterState extends State<Register> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController passwordConfirmationController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-
+  final List<String> genderOptions = ['Male', 'Female'];
+  String? selectedGender; // New variable to hold the selected gender value
 
 
   @override
@@ -91,12 +92,56 @@ class _RegisterState extends State<Register> {
 
                           SizedBox(width: 10.0),
                           Expanded(
-                            child: CustomTextFormField(
-                              label: "gender",
-                              controller: genderController,
-                              inputType: TextInputType.text,
-                              icon: Icons.people_alt_outlined,
-                              validator: nameValidation,
+                            child: DropdownButtonFormField<String>(
+                              focusColor: Colors.black,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.all(20),
+                                labelText: 'Gender',
+                                prefixIcon: Icon(Icons.people_alt_outlined,color: Colors.black,),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide:const BorderSide(
+                                      width: 2,
+                                      color: Colors.black,
+                                    )
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      width: 2,
+                                      color: Colors.black,
+                                    )),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      width: 2,
+                                      color: Colors.red,
+                                    )),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      width: 2,
+                                      color: Colors.red,
+                                    )),
+                              ),
+                              value: selectedGender,
+                              items: genderOptions.map((String gender) {
+                                return DropdownMenuItem<String>(
+                                  value: gender,
+                                  child: Text(gender),
+                                );
+                              }).toList(),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectedGender = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select gender';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ],
