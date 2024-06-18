@@ -1,101 +1,85 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:rickman/presentation/UI/Result/result.dart';
 import 'package:http/http.dart' as http;
+import 'package:rickman/ResultScreen.dart';
 
-import '../../../../test.dart';
 class Detect extends StatefulWidget {
   @override
   State<Detect> createState() => _DetectState();
 }
 
 class _DetectState extends State<Detect> {
-  //
-  // upload()async{
-  //   final request = http.MultipartRequest("POST" , "");
-  // }
-  final List<String> genderItems = [
-    'None',
-    'Edge',
-    'Blur',
-    'Soble',
-    'Enhance',
-    'Crop',
-    'Threshold',
-    'Histogram',
-    'Remove Skull',
-    'Detection',
-  ];
-
-  String? selectedValue;
-
-  bool isChecked = false;
-
-  Color getColor(Set<MaterialState> states) {
-    const Set<MaterialState> interactiveStates = <MaterialState>{
-      MaterialState.pressed,
-      MaterialState.hovered,
-      MaterialState.focused,
-    };
-    if (states.any(interactiveStates.contains)) {
-      return Colors.white;
-    }
-    return Colors.white;
-  }
   File? _image;
-  // File? _selectedImage;
-  String? _predictedClass;
+  String _result = '';
+  String _segmentationPath = '';
+  String _originalImagePath = '';
 
-
-  Future getImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     setState(() {
-      _image = File(image!.path);
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        _uploadImage(_image!);
+      } else {
+        print('No image selected.');
+      }
     });
   }
 
-  Future sendImage() async {
-    final url = 'http://10.0.2.2:5000/predict';
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-    var pic = await http.MultipartFile.fromPath("file", _image!.path);
-    request.files.add(pic);
+  Future<void> _uploadImage(File image) async {
+    final uri = Uri.parse('http://10.0.2.2:5000/predict');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('file', image.path));
 
-    var response = await request.send();
-    var responseBody = await response.stream.bytesToString();
+    final response = await request.send();
+    final responseData = await response.stream.bytesToString();
 
-    var prediction = jsonDecode(responseBody);
-    print(responseBody);
-    // Text(responseBody);
-    setState(() {
-      _predictedClass = prediction['class_name'];
-    });
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(responseData);
+      setState(() {
+        _result = jsonResponse['classification_result'];
+        _segmentationPath = 'http://10.0.2.2:5000/' + jsonResponse['segmentation_visualization'];
+        _originalImagePath = 'http://10.0.2.2:5000/' + jsonResponse['original_image'];
+      });
+      print('Segmentation Path: $_segmentationPath');
+      print('Original Image Path: $_originalImagePath');
+    } else {
+      setState(() {
+        _result = 'Error uploading image.';
+      });
+    }
   }
+
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    // TODO: implement build
     return Scaffold(
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(25.0),
           child: Column(
             children: [
-              const SizedBox(
-                height: 30,
+              Padding(
+                padding: const EdgeInsets.only(top: 25.0),
+                child: Row(
+                  children: [
+                    Text("Welcome", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                    SizedBox(width: 8,),
+                    Icon(Icons.waving_hand, color: Colors.yellow.shade800),
+                  ],
+                ),
               ),
-              // Text("Tap Here To Pick Your MRI Image"),
-              const SizedBox(
-                height: 20,
-              ),
+              Text("${FirebaseAuth.instance.currentUser!.displayName}", style: TextStyle(fontSize: 17, color: Colors.red, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
               InkWell(
-                onTap:getImage,
+                onTap: _pickImage,
                 child: Container(
                   width: 400,
                   height: 309,
@@ -105,108 +89,31 @@ class _DetectState extends State<Detect> {
                   ),
                   child: _image != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              MediaQuery.of(context).size.height * .02),
-                          child: Image.file(
-                            _image!,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ))
+                      borderRadius: BorderRadius.circular(MediaQuery.of(context).size.height * .02),
+                      child: Image.file(_image!, width: double.infinity, fit: BoxFit.cover))
                       : Column(
+                    children: [
+                      Container(
+                        width: 400,
+                        height: 309,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
                           children: [
-                            Container(
-                              width: 400,
-                              height: 309,
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 50,
-                                  ),
-                                  Image.asset(
-                                    "Assets/Images/Horizontal_Brain_Cancer_Logo for dark.png",
-                                    width: 260,
-                                  ),
-                                  SizedBox(
-                                    height: 35,
-                                  ),
-                                  Text(
-                                    "Tap Here To Pick Your MRI Image",
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                ],
-                              ),
-                            ),
+                            SizedBox(height: 50),
+                            Image.asset("Assets/Images/Horizontal_Brain_Cancer_Logo for dark.png", width: 260),
+                            SizedBox(height: 35),
+                            Text("Tap Here To Pick Your MRI Image", style: TextStyle(color: Colors.white)),
                           ],
                         ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 25,
-              ),
-              // DropdownButtonFormField2<String>(
-              //   isExpanded: true,
-              //   decoration: InputDecoration(
-              //     // Add Horizontal padding using menuItemStyleData.padding so it matches
-              //     // the menu padding when button's width is not specified.
-              //     contentPadding: const EdgeInsets.symmetric(vertical: 16),
-              //     border: OutlineInputBorder(
-              //       borderRadius: BorderRadius.circular(15),
-              //     ),
-              //     // Add more decoration..
-              //   ),
-              //   hint: const Text(
-              //     'Choose your filter',
-              //     style: TextStyle(fontSize: 16, color: Colors.black),
-              //   ),
-              //   items: genderItems
-              //       .map((item) => DropdownMenuItem<String>(
-              //             value: item,
-              //             child: Text(
-              //               item,
-              //               style: const TextStyle(
-              //                 fontSize: 14,
-              //               ),
-              //             ),
-              //           ))
-              //       .toList(),
-              //   validator: (value) {
-              //     if (value == null) {
-              //       return 'Choose your filter';
-              //     }
-              //     return null;
-              //   },
-              //   onChanged: (value) {
-              //     //Do something when selected item is changed.
-              //   },
-              //   onSaved: (value) {
-              //     selectedValue = value.toString();
-              //   },
-              //   buttonStyleData: const ButtonStyleData(
-              //     padding: EdgeInsets.only(right: 8),
-              //   ),
-              //   iconStyleData: const IconStyleData(
-              //     icon: Icon(
-              //       Icons.arrow_drop_down,
-              //       color: Colors.black,
-              //     ),
-              //     iconSize: 24,
-              //   ),
-              //   dropdownStyleData: DropdownStyleData(
-              //     decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(15),
-              //     ),
-              //   ),
-              //   menuItemStyleData: const MenuItemStyleData(
-              //     padding: EdgeInsets.symmetric(horizontal: 16),
-              //   ),
-              // ),
-              SizedBox(
-                height: 25,
-              ),
+              SizedBox(height: 25),
               ElevatedButton(
                 style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all(Colors.black),
@@ -220,177 +127,42 @@ class _DetectState extends State<Detect> {
                       fontSize: 20,
                       color: Colors.white)),
                 ),
-                onPressed:
-                sendImage,
-                    // () {Navigator.push(context, MaterialPageRoute(builder: (_) => BrainTumorDetector()));},
+                onPressed: () {
+                  if (_result.isNotEmpty && _segmentationPath.isNotEmpty && _originalImagePath.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResultScreen(
+                          classificationResult: _result,
+                          segmentationPath: _segmentationPath,
+                          originalImagePath: _originalImagePath,
+                        ),
+                      ),
+                    );
+                  }else{
+                    AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.error,
+                      animType: AnimType.rightSlide,
+                      title: 'error',
+                      desc: 'Upload MRI Image First...',
+                    ).show();
+                  }
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        "Scan Image",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      Text("Scan Image", style: TextStyle(color: Colors.white)),
                     ],
                   ),
                 ),
               ),
-              SizedBox(
-                height: 15,
-              ),
-              SizedBox(height: 20),
-              Row(children: [
-                Text("Predicted class :",style: TextStyle(fontSize: 22.5,fontWeight: FontWeight.bold),)
-              ],),
-              _predictedClass != null
-                  ? Text('$_predictedClass',style: TextStyle(fontSize: 18),)
-                  : Container(),
-              // Row(
-              //   children: [
-              //     Checkbox(
-              //       checkColor: Colors.black,
-              //       fillColor: MaterialStateProperty.resolveWith(getColor),
-              //       value: isChecked,
-              //       onChanged: (bool? value) {
-              //         setState(() {
-              //           isChecked = value!;
-              //         });
-              //       },
-              //     ),
-              //     // SizedBox(width: 15,),
-              //     Column(
-              //       children: [
-              //         Container(
-              //           width: size.width*0.690,
-              //           child: Text(
-              //             "You agree that we are not responsible",
-              //           ),
-              //         ),
-              //         Container(
-              //           width: size.width*0.690,
-              //           child: Text(
-              //             "for considering these results ",
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ],
-              // ),
-              SizedBox(
-                height: 50,
-              ),
-              Text(
-                "Please note that this program is intended to aid in the monitoring of brain tumors. The results should not be construed as definitive or final diagnosis without further medical consultation.",
-              )
             ],
           ),
         ),
       ),
     );
-  }
-
-  void _showButtonSheet() {
-    showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-        builder: (_) {
-          return ListView(
-            shrinkWrap: true,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * .03,
-                bottom: MediaQuery.of(context).size.height * 0.05),
-            children: [
-              const Text("Pick your MRI Image ",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * .02,
-              ),
-              Column(
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width*0.5,
-                    child: ElevatedButton(
-                        style: ButtonStyle(
-                          foregroundColor:
-                          MaterialStateProperty.all(Colors.black),
-                          backgroundColor:
-                          MaterialStateProperty.all(Colors.black),
-                          elevation: MaterialStateProperty.all(0),
-                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          )),
-                          textStyle: MaterialStateProperty.all(const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white)),
-                        ),
-                        onPressed: () {
-                          _PickImageFromGallery();
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                "Gallery",
-                                style:
-                                TextStyle(color: Colors.white, fontSize: 23),
-                              ),
-                            ),
-                          ],
-                        )),
-                  ),
-                  // ElevatedButton(
-                  //     style: ButtonStyle(
-                  //       foregroundColor:
-                  //       MaterialStateProperty.all(Colors.black),
-                  //       backgroundColor:
-                  //       MaterialStateProperty.all(Colors.black),
-                  //       elevation: MaterialStateProperty.all(0),
-                  //       shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       )),
-                  //       textStyle: MaterialStateProperty.all(const TextStyle(
-                  //           fontWeight: FontWeight.bold,
-                  //           fontSize: 20,
-                  //           color: Colors.white)),
-                  //     ),
-                  //     onPressed: () {
-                  //       _PickImageFromCamera();
-                  //       // Navigator.pushReplacement(
-                  //       //     context, MaterialPageRoute(builder: (_) => Home()));
-                  //     },
-                  //     child: const Row(
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: [
-                  //         Padding(
-                  //           padding: EdgeInsets.all(10),
-                  //           child: Text(
-                  //             "camera",
-                  //             style:
-                  //             TextStyle(color: Colors.white, fontSize: 23),
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     )),
-                ],
-              )
-            ],
-          );
-        });
-  }
-
-  Future _PickImageFromGallery() async {
-    final returnedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      _image = File(returnedImage!.path);
-    });
   }
 }
