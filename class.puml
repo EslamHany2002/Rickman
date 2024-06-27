@@ -1,0 +1,454 @@
+@startuml
+set namespaceSeparator ::
+
+class "rickman::auth::authenticationServices.dart::AuthenticationServices" {
+  -void _showErrorDialog()
+  -void _showSuccessDialog()
+  +dynamic signOut()
+  +dynamic signInWithEmailAndPassword()
+  +dynamic signIn()
+  +dynamic signInWithGoogle()
+  +dynamic storeUserData()
+  +dynamic register()
+  +dynamic changePassword()
+}
+
+class "rickman::core::Theme::Theme.dart::MyTheme" {
+  {static} +Color gray
+  {static} +Color offWhite
+  {static} +Color white
+  {static} +Color darkGray
+  {static} +Color lightGray
+  {static} +Color grayPurple
+  {static} +Color green
+  {static} +Color yellow
+  {static} +Color red
+  {static} +ThemeData lightTheme
+  {static} +ThemeData darkTheme
+}
+
+"rickman::core::Theme::Theme.dart::MyTheme" o-- "dart::ui::Color"
+"rickman::core::Theme::Theme.dart::MyTheme" o-- "flutter::src::material::theme_data.dart::ThemeData"
+
+class "rickman::main.dart::MyApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::main.dart::MyApp"
+
+class "rickman::Models::user_model.dart::UserModel" {
+  +String email
+  +String userName
+  +String phone
+  +Map<String, dynamic> toJson()
+}
+
+class "rickman::presentation::test.dart::BrainTumorDetector" {
+  +_BrainTumorDetectorState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::test.dart::BrainTumorDetector"
+
+class "rickman::presentation::test.dart::_BrainTumorDetectorState" {
+  -File? _image
+  -String? _predictedClass
+  +dynamic getImage()
+  +dynamic sendImage()
+  +Widget build()
+}
+
+"rickman::presentation::test.dart::_BrainTumorDetectorState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::test.dart::_BrainTumorDetectorState"
+
+class "rickman::presentation::UI::About%20us::AboutUs.dart::AboutUs" {
+  +State<AboutUs> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::About%20us::AboutUs.dart::AboutUs"
+
+class "rickman::presentation::UI::About%20us::AboutUs.dart::_AboutUsState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::About%20us::AboutUs.dart::_AboutUsState"
+
+class "rickman::presentation::UI::About%20us::Widget::TextCard.dart::TextCard" {
+  +String content
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::About%20us::Widget::TextCard.dart::TextCard"
+
+class "rickman::presentation::UI::change%20password::chagePassword.dart::ChagePassword" {
+  +State<ChagePassword> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::change%20password::chagePassword.dart::ChagePassword"
+
+class "rickman::presentation::UI::change%20password::chagePassword.dart::_ChagePasswordState" {
+  -GlobalKey<FormState> _formKey
+  +TextEditingController passwordController
+  +Widget build()
+  +String? passwordValidation()
+}
+
+"rickman::presentation::UI::change%20password::chagePassword.dart::_ChagePasswordState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"rickman::presentation::UI::change%20password::chagePassword.dart::_ChagePasswordState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::change%20password::chagePassword.dart::_ChagePasswordState"
+
+class "rickman::presentation::UI::Developer::App%20Developer.dart::DeveloperCard" {
+  +String imagePath
+  +String name
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Developer::App%20Developer.dart::DeveloperCard"
+
+class "rickman::presentation::UI::Edit%20Profile::EditProfile.dart::UpdateProfileScreen" {
+  +_UpdateProfileScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Edit%20Profile::EditProfile.dart::UpdateProfileScreen"
+
+class "rickman::presentation::UI::Edit%20Profile::EditProfile.dart::_UpdateProfileScreenState" {
+  -File? _selectedImage
+  +User? user
+  +TextEditingController nameController
+  +TextEditingController phoneController
+  +TextEditingController ageController
+  +TextEditingController emailController
+  +void initState()
+  +dynamic updateUser()
+  -dynamic _uploadImage()
+  -dynamic _getExistingProfilePicture()
+  +dynamic loadUserData()
+  +Widget build()
+  +String? nameValidation()
+  +String? phoneValidation()
+  -void _showButtonSheet()
+  -dynamic _PickImageFromGallery()
+  -dynamic _PickImageFromCamera()
+}
+
+"rickman::presentation::UI::Edit%20Profile::EditProfile.dart::_UpdateProfileScreenState" o-- "dart::io::File"
+"rickman::presentation::UI::Edit%20Profile::EditProfile.dart::_UpdateProfileScreenState" o-- "firebase_auth::firebase_auth.dart::User"
+"rickman::presentation::UI::Edit%20Profile::EditProfile.dart::_UpdateProfileScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Edit%20Profile::EditProfile.dart::_UpdateProfileScreenState"
+
+class "rickman::presentation::UI::ExtraInfo::ExtraInfoView.dart::ExtraInfoView" {
+  +State<ExtraInfoView> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::ExtraInfo::ExtraInfoView.dart::ExtraInfoView"
+
+class "rickman::presentation::UI::ExtraInfo::ExtraInfoView.dart::_ExtraInfoViewState" {
+  +TextEditingController phoneController
+  -TextEditingController _date
+  -File? _selectedImage
+  -dynamic _showDatePicker()
+  +Widget build()
+  -void _showButtonSheet()
+  -dynamic _PickImageFromGallery()
+  -dynamic _PickImageFromCamera()
+  +String? phoneValidation()
+}
+
+"rickman::presentation::UI::ExtraInfo::ExtraInfoView.dart::_ExtraInfoViewState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"rickman::presentation::UI::ExtraInfo::ExtraInfoView.dart::_ExtraInfoViewState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::ExtraInfo::ExtraInfoView.dart::_ExtraInfoViewState"
+
+class "rickman::presentation::UI::Feedback::Feedback.dart::FeedbackPage" {
+  +State<FeedbackPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Feedback::Feedback.dart::FeedbackPage"
+
+class "rickman::presentation::UI::Feedback::Feedback.dart::_FeedbackState" {
+  -TextEditingController _feedbackController
+  -double _rating
+  -dynamic _sendFeedback()
+  +Widget build()
+}
+
+"rickman::presentation::UI::Feedback::Feedback.dart::_FeedbackState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Feedback::Feedback.dart::_FeedbackState"
+
+class "rickman::presentation::UI::Forgit%20Password::Forgit.dart::Forgit" {
+  +State<Forgit> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Forgit%20Password::Forgit.dart::Forgit"
+
+class "rickman::presentation::UI::Forgit%20Password::Forgit.dart::_ForgitState" {
+  -GlobalKey<FormState> _formKey
+  +TextEditingController emailController
+  +Widget build()
+  +void sendPasswordResetEmail()
+  +String? emailValidation()
+}
+
+"rickman::presentation::UI::Forgit%20Password::Forgit.dart::_ForgitState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"rickman::presentation::UI::Forgit%20Password::Forgit.dart::_ForgitState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Forgit%20Password::Forgit.dart::_ForgitState"
+
+class "rickman::presentation::UI::Home::HomePage.dart::Home" {
+  +State<Home> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Home::HomePage.dart::Home"
+
+class "rickman::presentation::UI::Home::HomePage.dart::_HomeState" {
+  -int _selectedIndex
+  +List<Widget> tabItems
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Home::HomePage.dart::_HomeState"
+
+class "rickman::presentation::UI::Home::Taps::Detect::Detect.dart::Detect" {
+  +State<Detect> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Home::Taps::Detect::Detect.dart::Detect"
+
+class "rickman::presentation::UI::Home::Taps::Detect::Detect.dart::_DetectState" {
+  -File? _image
+  -String _result
+  -String _segmentationPath
+  -String _originalImagePath
+  -dynamic _pickImage()
+  -dynamic _uploadImage()
+  +Widget build()
+}
+
+"rickman::presentation::UI::Home::Taps::Detect::Detect.dart::_DetectState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Home::Taps::Detect::Detect.dart::_DetectState"
+
+class "rickman::presentation::UI::Home::Taps::Profile::Profile.dart::Profile" {
+  +State<Profile> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Home::Taps::Profile::Profile.dart::Profile"
+
+class "rickman::presentation::UI::Home::Taps::Profile::Profile.dart::_ProfileState" {
+  +User? currentUser
+  +String fname
+  +String lname
+  +String email
+  +String profileImageUrl
+  +void initState()
+  -dynamic _loadUserProfile()
+  +Widget build()
+}
+
+"rickman::presentation::UI::Home::Taps::Profile::Profile.dart::_ProfileState" o-- "firebase_auth::firebase_auth.dart::User"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Home::Taps::Profile::Profile.dart::_ProfileState"
+
+class "rickman::presentation::UI::Home::Taps::Profile::Widgets::CustomButton.dart::CustomButton" {
+  +String title
+  +Function action
+  +IconData icon
+  +Color color
+  +Widget build()
+}
+
+"rickman::presentation::UI::Home::Taps::Profile::Widgets::CustomButton.dart::CustomButton" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"rickman::presentation::UI::Home::Taps::Profile::Widgets::CustomButton.dart::CustomButton" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Home::Taps::Profile::Widgets::CustomButton.dart::CustomButton"
+
+class "rickman::presentation::UI::Home::Taps::Profile::Widgets::UserProfileDataWidget.dart::UserProfileDataWidget" {
+  +bool isEn
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Home::Taps::Profile::Widgets::UserProfileDataWidget.dart::UserProfileDataWidget"
+
+class "rickman::presentation::UI::Intro::intro.dart::Intro" {
+  +State<Intro> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Intro::intro.dart::Intro"
+
+class "rickman::presentation::UI::Intro::intro.dart::_IntroState" {
+  -PageController _controller
+  +bool onLastPage
+  +bool onFirstPage
+  +Widget build()
+}
+
+"rickman::presentation::UI::Intro::intro.dart::_IntroState" o-- "flutter::src::widgets::page_view.dart::PageController"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Intro::intro.dart::_IntroState"
+
+class "rickman::presentation::UI::Intro::Taps::Intro_Screen%201::Intro_Screen%201.dart::IntroFirstScreen" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Intro::Taps::Intro_Screen%201::Intro_Screen%201.dart::IntroFirstScreen"
+
+class "rickman::presentation::UI::Intro::Taps::Intro_Screen%202::Intro_Screen%202.dart::IntroSecondScreen" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Intro::Taps::Intro_Screen%202::Intro_Screen%202.dart::IntroSecondScreen"
+
+class "rickman::presentation::UI::Intro::Taps::Intro_Screen%203::Intro_Screen%203.dart::IntroThirdScreen" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Intro::Taps::Intro_Screen%203::Intro_Screen%203.dart::IntroThirdScreen"
+
+class "rickman::presentation::UI::Login::Login.dart::Login" {
+  +State<Login> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Login::Login.dart::Login"
+
+class "rickman::presentation::UI::Login::Login.dart::_LoginState" {
+  +Widget build()
+  +String? emailValidation()
+  +String? passwordValidation()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Login::Login.dart::_LoginState"
+
+class "rickman::presentation::UI::Register::Register.dart::Register" {
+  +State<Register> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Register::Register.dart::Register"
+
+class "rickman::presentation::UI::Register::Register.dart::_RegisterState" {
+  -GlobalKey<FormState> _formKey
+  +TextEditingController firstNameController
+  +TextEditingController lastNameController
+  +TextEditingController ageController
+  +TextEditingController genderController
+  +TextEditingController emailController
+  +TextEditingController passwordController
+  +TextEditingController passwordConfirmationController
+  +TextEditingController phoneController
+  +List<String> genderOptions
+  +String? selectedGender
+  +Widget build()
+  +String? nameValidation()
+  +String? emailValidation()
+  +String? passwordValidation()
+  +String? passwordConfirmationValidation()
+  +String? phoneValidation()
+}
+
+"rickman::presentation::UI::Register::Register.dart::_RegisterState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"rickman::presentation::UI::Register::Register.dart::_RegisterState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Register::Register.dart::_RegisterState"
+
+class "rickman::presentation::UI::Result::result.dart::Result" {
+  +State<Result> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Result::result.dart::Result"
+
+class "rickman::presentation::UI::Result::result.dart::_ResultState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Result::result.dart::_ResultState"
+
+class "rickman::presentation::UI::SplachScreen::SplachScreen.dart::SplashScreen" {
+  +_SplashScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::SplachScreen::SplachScreen.dart::SplashScreen"
+
+class "rickman::presentation::UI::SplachScreen::SplachScreen.dart::_SplashScreenState" {
+  +bool isFirstTime
+  +bool isLoggedIn
+  +void initState()
+  -dynamic _checkUserStatus()
+  +Widget build()
+  -Widget _getNextScreen()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::SplachScreen::SplachScreen.dart::_SplashScreenState"
+
+class "rickman::presentation::UI::Widgets::CustomLongTextFormField.dart::CustomLongTextFormField" {
+  +String label
+  +TextEditingController controller
+  +TextInputType inputType
+  +Widget build()
+}
+
+"rickman::presentation::UI::Widgets::CustomLongTextFormField.dart::CustomLongTextFormField" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"rickman::presentation::UI::Widgets::CustomLongTextFormField.dart::CustomLongTextFormField" o-- "flutter::src::services::text_input.dart::TextInputType"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Widgets::CustomLongTextFormField.dart::CustomLongTextFormField"
+
+class "rickman::presentation::UI::Widgets::CustomPasswordTextFormField.dart::CustomPasswordTextFormField" {
+  +String label
+  +TextEditingController controller
+  +TextInputType inputType
+  +Function validator
+  +IconData icon
+  +State<CustomPasswordTextFormField> createState()
+}
+
+"rickman::presentation::UI::Widgets::CustomPasswordTextFormField.dart::CustomPasswordTextFormField" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"rickman::presentation::UI::Widgets::CustomPasswordTextFormField.dart::CustomPasswordTextFormField" o-- "flutter::src::services::text_input.dart::TextInputType"
+"rickman::presentation::UI::Widgets::CustomPasswordTextFormField.dart::CustomPasswordTextFormField" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Widgets::CustomPasswordTextFormField.dart::CustomPasswordTextFormField"
+
+class "rickman::presentation::UI::Widgets::CustomPasswordTextFormField.dart::_CustomPasswordTextFormFieldState" {
+  +bool visiabel
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Widgets::CustomPasswordTextFormField.dart::_CustomPasswordTextFormFieldState"
+
+class "rickman::presentation::UI::Widgets::CustomTextFormField.dart::CustomTextFormField" {
+  +String label
+  +TextEditingController controller
+  +TextInputType inputType
+  +Function validator
+  +IconData icon
+  +Widget build()
+}
+
+"rickman::presentation::UI::Widgets::CustomTextFormField.dart::CustomTextFormField" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"rickman::presentation::UI::Widgets::CustomTextFormField.dart::CustomTextFormField" o-- "flutter::src::services::text_input.dart::TextInputType"
+"rickman::presentation::UI::Widgets::CustomTextFormField.dart::CustomTextFormField" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "rickman::presentation::UI::Widgets::CustomTextFormField.dart::CustomTextFormField"
+
+class "rickman::presentation::UI::Widgets::Theme%20Switch.dart::ThemeSwitch" {
+  +State<ThemeSwitch> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::presentation::UI::Widgets::Theme%20Switch.dart::ThemeSwitch"
+
+class "rickman::presentation::UI::Widgets::Theme%20Switch.dart::_ThemeSwitchState" {
+  +bool light0
+  +bool light1
+  +MaterialStateProperty<Icon?> thumbIcon
+  +Widget build()
+}
+
+"rickman::presentation::UI::Widgets::Theme%20Switch.dart::_ThemeSwitchState" o-- "flutter::src::material::material_state.dart::MaterialStateProperty<Icon>"
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::presentation::UI::Widgets::Theme%20Switch.dart::_ThemeSwitchState"
+
+class "rickman::ResultScreen.dart::ResultScreen" {
+  +String classificationResult
+  +String segmentationPath
+  +String originalImagePath
+  +_ResultScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "rickman::ResultScreen.dart::ResultScreen"
+
+class "rickman::ResultScreen.dart::_ResultScreenState" {
+  +String baseUrl
+  +dynamic fetchData()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "rickman::ResultScreen.dart::_ResultScreenState"
+
+
+@enduml
