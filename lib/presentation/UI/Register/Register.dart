@@ -23,8 +23,7 @@ class _RegisterState extends State<Register> {
   TextEditingController passwordConfirmationController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   final List<String> genderOptions = ['Male', 'Female'];
-  String? selectedGender; // New variable to hold the selected gender value
-
+  String? selectedGender = 'Male'; // Initialize the selected gender value
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +60,10 @@ class _RegisterState extends State<Register> {
                               validator: nameValidation,
                             ),
                           ),
-
                           SizedBox(width: 10.0),
                           Expanded(
                             child: CustomTextFormField(
-                              label: "last name",
+                              label: "Last name",
                               controller: lastNameController,
                               inputType: TextInputType.name,
                               icon: EvaIcons.person,
@@ -89,7 +87,6 @@ class _RegisterState extends State<Register> {
                               validator: nameValidation,
                             ),
                           ),
-
                           SizedBox(width: 10.0),
                           Expanded(
                             child: DropdownButtonFormField<String>(
@@ -97,14 +94,16 @@ class _RegisterState extends State<Register> {
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.all(20),
                                 labelText: 'Gender',
-                                prefixIcon: Icon(Icons.people_alt_outlined,color: Colors.black,),
+                                prefixIcon: Icon(
+                                  Icons.people_alt_outlined,
+                                  color: Colors.black,
+                                ),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
-                                    borderSide:const BorderSide(
+                                    borderSide: const BorderSide(
                                       width: 2,
                                       color: Colors.black,
-                                    )
-                                ),
+                                    )),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
                                     borderSide: const BorderSide(
@@ -124,6 +123,7 @@ class _RegisterState extends State<Register> {
                                       color: Colors.red,
                                     )),
                               ),
+                              // **Bind the controller to the selected value:**
                               value: selectedGender,
                               items: genderOptions.map((String gender) {
                                 return DropdownMenuItem<String>(
@@ -132,8 +132,10 @@ class _RegisterState extends State<Register> {
                                 );
                               }).toList(),
                               onChanged: (String? value) {
+                                // **Update the controller when a new value is selected:**
                                 setState(() {
                                   selectedGender = value;
+                                  genderController.text = value!;
                                 });
                               },
                               validator: (value) {
@@ -160,22 +162,18 @@ class _RegisterState extends State<Register> {
                         height: size.height * 0.025,
                       ),
                       CustomTextFormField(
-                        label: "phone",
+                        label: "Phone",
                         controller: phoneController,
                         inputType: TextInputType.phone,
                         icon: EvaIcons.phone,
                         validator: phoneValidation,
                       ),
 
-
-
-
-
                       SizedBox(
                         height: size.height * 0.025,
                       ),
                       CustomPasswordTextFormField(
-                        label: "password",
+                        label: "Password",
                         controller: passwordController,
                         inputType: TextInputType.visiblePassword,
                         icon: EvaIcons.lock,
@@ -194,18 +192,18 @@ class _RegisterState extends State<Register> {
                       SizedBox(
                         height: size.height * 0.025,
                       ),
-                      // Login Button
+                      // Register Button
                       ElevatedButton(
                           style: ButtonStyle(
                             foregroundColor:
-                                MaterialStateProperty.all(Colors.black),
+                            MaterialStateProperty.all(Colors.black),
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.black),
+                            MaterialStateProperty.all(Colors.black),
                             elevation: MaterialStateProperty.all(0),
                             shape: MaterialStateProperty.all(
                                 RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            )),
+                                  borderRadius: BorderRadius.circular(10),
+                                )),
                             textStyle: MaterialStateProperty.all(
                                 const TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -213,7 +211,18 @@ class _RegisterState extends State<Register> {
                                     color: Colors.white)),
                           ),
                           onPressed: () {
-                            AuthenticationServices().register(context , firstNameController.text , lastNameController.text , ageController.text,genderController.text, emailController.text , phoneController.text , passwordController.text , passwordConfirmationController.text );
+                            if (_formKey.currentState!.validate()) {
+                              AuthenticationServices().register(
+                                  context,
+                                  firstNameController.text,
+                                  lastNameController.text,
+                                  ageController.text,
+                                  genderController.text,
+                                  emailController.text,
+                                  phoneController.text,
+                                  passwordController.text,
+                                  passwordConfirmationController.text);
+                            }
                           },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -229,7 +238,7 @@ class _RegisterState extends State<Register> {
                             ],
                           )),
 
-                      // Create Account Button
+                      // Login Button
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -265,9 +274,9 @@ class _RegisterState extends State<Register> {
 
   String? nameValidation(String name) {
     if (name.isEmpty) {
-      return "nameCantBeEmpty";
+      return "Name can't be empty";
     } else if (RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%-]').hasMatch(name)) {
-      return "invalidName";
+      return "Invalid name";
     } else {
       return null;
     }
@@ -276,22 +285,22 @@ class _RegisterState extends State<Register> {
   // validate on the email form
   String? emailValidation(String input) {
     if (input.isEmpty) {
-      return "emailCantBeEmpty";
+      return "Email can't be empty";
     } else if (!RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+"
-            r"@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-            r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-            r"{0,253}[a-zA-Z0-9])?)*$")
+    r"@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+    r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+    r"{0,253}[a-zA-Z0-9])?)*$")
         .hasMatch(input)) {
-      return "Enter a Valid Email";
+      return "Enter a valid email";
     }
     return null;
   }
 
   String? passwordValidation(String input) {
     if (input.isEmpty) {
-      return "passwordCantBeEmpty";
+      return "Password can't be empty";
     } else if (input.length < 8) {
-      return "invalidPasswordLength";
+      return "Invalid password length";
     }
     return null;
   }
@@ -299,18 +308,18 @@ class _RegisterState extends State<Register> {
   // validate the password confirmation is not empty and the same as the password
   String? passwordConfirmationValidation(String input) {
     if (input.isEmpty) {
-      return "passwordCantBeEmpty";
+      return "Password can't be empty";
     } else if (input != passwordController.text) {
-      return "passwordDoseNotMatch";
+      return "Password does not match";
     }
     return null;
   }
 
   String? phoneValidation(String value) {
     if (value.isEmpty) {
-      return "enterPhoneNumber";
+      return "Enter phone number";
     } else if (!RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)').hasMatch(value)) {
-      return "enterValidMobileNumber";
+      return "Enter valid mobile number";
     }
     return null;
   }
